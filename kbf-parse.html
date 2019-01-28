@@ -1,0 +1,242 @@
+<html>
+<head>
+<meta charset="utf-8">
+
+<style type="text/css">
+html {
+  background-color: #111;
+}
+
+body {
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  box-sizing: border-box;
+}
+td {
+  text-align: center;
+  vertical-align: top;
+}
+
+.panel1, .panel3 {
+  width: 100%;
+  height: 300px;
+  padding: 8px;
+}
+.panel1 {
+  background-color: #622;
+  left: 0;
+}
+.panel3 {
+  background-color: #262;
+  right: 0;
+}
+.panel2 {
+}
+.panel2 button {
+  font-size: x-large;
+  padding: 0 16px;
+}
+ 
+textarea {
+  font-size: 10pt;
+  color: #eee;
+  box-sizing: border-box;
+}
+#input, #output, #config, #info {
+  height: 100%;
+  border: 1px solid #000;
+}
+#input {
+  background-color: #300;
+  border-color: #c00;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+}
+#output {
+  background-color: #030;
+  border-color: #0c0;
+  width: 33%;
+  max-width: 33%;
+  min-width: 33%;
+}
+#config {
+  background-color: #171700;
+  border-color: #cccc00;
+  width: 33%;
+}
+#info {
+  background-color: #171700;
+  border-color: #cccc00;
+  width: 33%;
+}
+</style>
+
+<title>kbf json parser</title>
+</head>
+
+<body>
+
+<table>
+	<tr>
+		<td class="panel1">
+			<textarea id="input"></textarea>
+		</td>
+	</tr>
+	<tr>
+		<td class="panel2">
+			<button type="submit">Parse</button>
+			<button>Clear</button>
+		</td>
+	</tr>
+	<tr>
+		<td class="panel3">
+			<textarea id="output"></textarea>
+			<textarea id="config" placeholder="config.h"></textarea>
+			<textarea id="info" placeholder="KLE data for building info.json"></textarea>
+		</td>
+	</tr>
+</table>
+
+
+<script type="text/javascript">
+document.getElementsByTagName('button')[1].addEventListener(
+  "click",
+  function(){
+    document.getElementById('output').value = "";
+    document.getElementById('config').value = "";
+    document.getElementById('info').value = "";
+  }
+);
+document.getElementsByTagName('button')[0].addEventListener(
+  "click",
+  function(){
+
+var text_i = document.getElementById('input').value;
+var text_o = document.getElementById('output');
+var text_config = document.getElementById('config');
+var text_info = document.getElementById('info');
+text_o.value = "";
+//console.log( text_i );
+
+// create an object of our JSON data
+var obj = JSON.parse( JSON.stringify( eval( "("+ text_i +")" ) ) );
+console.log( typeof obj );
+
+// t will equal the number of keys in the keymap
+var t = obj.keyboard.keys.length;
+
+// keymap is an array that holds our keymap
+// 16 layers, the maximum supported by kbfirmware
+var keymap = [
+  [], [], [], [], 
+  [], [], [], [], 
+  [], [], [], [], 
+  [], [], [], [], 
+];
+var kb = obj.keyboard;
+var cols = obj.keyboard.cols;
+
+// 9 - obj.keyboard.keys[0].keycodes[0].id.length;
+var layer_data = "";
+var info_data = "";
+var info_data_l = 0;
+
+for ( layer=0; layer<16; layer++ ) {
+  //keymap[layer].push("[" + layer + "] = LAYOUT(" );
+  //keymap[layer].push( [] );
+  layer_data += "  [" +layer+ "] = LAYOUT( \\\n    ";
+  
+  for ( key=0; key<t; key++ ) {
+    var keycode = kb.keys[key].keycodes[layer].id;
+    if ( kb.keys[key].keycodes[layer].fields.length == 1 ) {
+      console.log( "type: "+ typeof kb.keys[key].keycodes[layer].fields[0] );
+      switch ( typeof kb.keys[key].keycodes[layer].fields[0] ) {
+        case "number":
+        case "string":
+          var field = kb.keys[key].keycodes[layer].fields[0];
+          break;
+        case "object":
+          var field = kb.keys[key].keycodes[layer].fields[0].id;
+          break;
+      }
+      keycode = keycode.replace(/\(\)/, "("+field+")");
+    }
+    var pad = 9 - 1 - keycode.length;
+    
+    // keymap[layer]/*[0]*/.push( "\"" + keycode + "\"" + "" + " ".repeat(pad) );
+    //layer_data += keycode + "," + " ".repeat( Math.max( 0, pad ) );
+    layer_data += keycode;
+	if ( key < (t-1) ) {
+		layer_data += "," + " ".repeat( Math.max( 0, pad ) );
+	} else {
+		layer_data += " ".repeat( Math.max( 0, pad+1 ) ) + "\\";
+	}
+
+	// add info.json data
+	if ( info_data_l < t ) {
+	  if ( ( key > 0 ) && ( kb.keys[key].state.y > kb.keys[key-1].state.y ) ) {
+	    info_data += "],\n[\n";
+	  }
+	  if ( key == 0 ) {
+	    var x = 0;
+	    var y = 0;
+	  } else { 
+	    var x = kb.keys[key].state.x - ( kb.keys[key-1].state.x + kb.keys[key-1].state.w );
+	    var y = kb.keys[key].state.y - kb.keys[key-1].state.y;
+	  }
+	  info_data += ""+
+	    "{x:"+  x +","+
+	    "y:"+ Math.min(0, y) +","+
+	    "w:"+ kb.keys[key].state.w +","+
+	    "h:"+ kb.keys[key].state.h +"},"+
+		//"\""+ kb.keys[key].keycodes[0].id +"\",\n";
+		"\"K"+ kb.keys[key].row.toString(16).toUpperCase() + kb.keys[key].col.toString(16).toUpperCase() +"\",\n";
+		//console.log( kb.keys[key].row.toString(16) + "/" + kb.keys[key].col.toString(16) );
+	  info_data_l++;
+    }
+	
+    // wrap the line every 10 keys
+    if ( key % cols == (cols-1) ) {
+      layer_data += "\\\n    ";
+    }
+  }
+
+  layer_data = layer_data.replace(
+    /, +\n  \)$/g,
+    "  \\\n  )"
+  ) + "\n  ),\n";
+}
+  
+text_o.value = ""+
+	"#include QMK_KEYBOARD_H\n"+
+	"\n"+
+	"const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {\n"+
+	"  // keys per layer: "+ t +"\n"+
+	layer_data +
+	"};\n";
+text_config.value = ""+
+	"#define MATRIX_ROWS "+ obj.keyboard.pins.row.length +"\n"+
+	"#define MATRIX_COLS "+ obj.keyboard.pins.col.length +"\n"+
+	"\n"+
+	"#define MATRIX_ROW_PINS { "+ obj.keyboard.pins.row.toString().split(',').join(', ') +" }\n"+
+	"#define MATRIX_COL_PINS { "+ obj.keyboard.pins.col.toString().split(',').join(', ') +" }\n";
+text_info.value = ""+
+	"[\n"+
+	info_data +"\n"+
+	"]\n";
+// error correction
+text_info.value = text_info.value
+  .replace(/x:-[0-9\.]+/g, "x:0")
+  .replace(/[xy]:0,/g, "")
+  .replace(/,[\n]+\]/g, "\n]");
+	
+});
+</script>
+
+</body>
+</html>
+

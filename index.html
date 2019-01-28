@@ -2,88 +2,22 @@
 <head>
 <meta charset="utf-8">
 
-<style type="text/css">
-html {
-  background-color: #111;
-}
-
-body {
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  box-sizing: border-box;
-}
-td {
-  text-align: center;
-  vertical-align: top;
-}
-
-.panel1, .panel3 {
-  width: 100%;
-  height: 300px;
-  padding: 8px;
-}
-.panel1 {
-  background-color: #622;
-  left: 0;
-}
-.panel3 {
-  background-color: #262;
-  right: 0;
-}
-.panel2 {
-}
-.panel2 button {
-  font-size: x-large;
-  padding: 0 16px;
-}
- 
-textarea {
-  font-size: 10pt;
-  color: #eee;
-  box-sizing: border-box;
-}
-#input, #output, #config, #info {
-  height: 100%;
-  border: 1px solid #000;
-}
-#input {
-  background-color: #300;
-  border-color: #c00;
-  width: 100%;
-  max-width: 100%;
-  min-width: 100%;
-}
-#output {
-  background-color: #030;
-  border-color: #0c0;
-  width: 33%;
-  max-width: 33%;
-  min-width: 33%;
-}
-#config {
-  background-color: #171700;
-  border-color: #cccc00;
-  width: 33%;
-}
-#info {
-  background-color: #171700;
-  border-color: #cccc00;
-  width: 33%;
-}
-</style>
+<link rel="stylesheet" href="./style.css" type="text/css">
 
 <title>kbf json parser</title>
 </head>
 
 <body>
 
+<h1>KBFirmware JSON to QMK Parser</h1>
+
+
+
 <table>
 	<tr>
 		<td class="panel1">
-			<textarea id="input"></textarea>
+			<label for="input">Paste the contents of a KBFirmware-formatted JSON file below:</label><br>
+			<textarea id="input" spellcheck="false"></textarea>
 		</td>
 	</tr>
 	<tr>
@@ -94,9 +28,10 @@ textarea {
 	</tr>
 	<tr>
 		<td class="panel3">
-			<textarea id="output"></textarea>
-			<textarea id="config" placeholder="config.h"></textarea>
-			<textarea id="info" placeholder="KLE data for building info.json"></textarea>
+			<label for="input">Copy the output to the necessary file:</label><br>
+			<textarea id="output" spellcheck="false" placeholder="keymap.c"></textarea>
+			<textarea id="config" spellcheck="false" placeholder="config.h"></textarea>
+			<textarea id="info" spellcheck="false" placeholder="KLE Raw Data for building a QMK info.json file"></textarea>
 		</td>
 	</tr>
 </table>

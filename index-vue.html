@@ -1,0 +1,309 @@
+<html>
+<head>
+<meta charset="utf-8">
+
+<link rel="stylesheet" href="./style-vue.css" type="text/css">
+
+<!-- production version, optimized for size and speed -->
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+<title>KBFirmware JSON to QMK Parser</title>
+</head>
+
+<body>
+
+<div id="header">
+	<h1 id="title">{{ title }}</h1>
+	<h2 id="subtitle">{{ subtitle }}</h1>
+</div>
+
+
+
+<table>
+	<tr>
+		<td class="panel1">
+			<label for="input">Paste the contents of a KBFirmware-formatted JSON file below:</label><br>
+			<textarea id="input" spellcheck="false"></textarea>
+		</td>
+	</tr>
+	<tr>
+		<td class="panel2">
+			<button type="submit">Parse JSON input</button>
+			<button>Clear Output fields</button>
+		</td>
+	</tr>
+	<tr>
+		<td class="panel3">
+			<label for="input">Copy the output to the necessary file:</label><br>
+			<textarea id="output" spellcheck="false" placeholder="keymap.c"></textarea>
+			<textarea id="config" spellcheck="false" placeholder="config.h"></textarea>
+			<textarea id="info" spellcheck="false" placeholder="info.json"></textarea>
+			<textarea id="matrix" spellcheck="false" placeholder="Switch Matrix for <keyboard>.h"></textarea>
+		</td>
+	</tr>
+</table>
+
+<script src="./app.js"></script>
+
+<script type="text/javascript">
+document.getElementsByTagName('button')[1].addEventListener(
+	"click",
+	function(){
+		document.getElementById('output').value = "";
+		document.getElementById('config').value = "";
+		document.getElementById('info').value = "";
+		document.getElementById('matrix').value = "";
+	}
+);
+document.getElementsByTagName('button')[0].addEventListener(
+	"click",
+	function () {
+
+		var text_i = document.getElementById('input').value;
+		var text_o = document.getElementById('output');
+		var text_config = document.getElementById('config');
+		var text_info = document.getElementById('info');
+		var text_matrix = document.getElementById('matrix');
+		text_o.value = "";
+		//console.log( text_i );
+
+		// create an object of our JSON data
+		var obj = JSON.parse(JSON.stringify(eval("(" + text_i + ")")));
+		console.log(typeof obj);
+
+		// t will equal the number of keys in the keymap
+		var t = obj.keyboard.keys.length;
+
+		// keymap is an array that holds our keymap
+		// 16 layers, the maximum supported by kbfirmware
+		var keymap = [
+			[], [], [], [],
+			[], [], [], [],
+			[], [], [], [],
+			[], [], [], [],
+		];
+		var kb = obj.keyboard;
+		var cols = obj.keyboard.cols;
+
+		// 9 - obj.keyboard.keys[0].keycodes[0].id.length;
+		var layer_data = "";
+		var info_data = "";
+		var info_data_l = 0;
+
+		var switch_matrix = new Array(obj.keyboard.rows);
+		var switch_layout = new Array( t );
+
+		for (row = 0; row < obj.keyboard.rows; row++) {
+			switch_matrix[row] = new Array(obj.keyboard.cols);
+		}
+		//console.log(switch_matrix);
+
+		for (layer = 0; layer < 16; layer++) {
+			//keymap[layer].push("[" + layer + "] = LAYOUT(" );
+			//keymap[layer].push( [] );
+			layer_data += "  [" + layer + "] = LAYOUT( \\\n    ";
+
+			for (key = 0; key < t; key++) {
+				var keycode = kb.keys[key].keycodes[layer].id;
+				if (kb.keys[key].keycodes[layer].fields.length == 1) {
+					console.log("type: " + typeof kb.keys[key].keycodes[layer].fields[0]);
+					switch (typeof kb.keys[key].keycodes[layer].fields[0]) {
+					case "number":
+					case "string":
+						var field = kb.keys[key].keycodes[layer].fields[0];
+						break;
+					case "object":
+						var field = kb.keys[key].keycodes[layer].fields[0].id;
+						break;
+					}
+					keycode = keycode.replace(/\(\)/, "(" + field + ")");
+				}
+				var pad = 9 - 1 - keycode.length;
+
+				// keymap[layer]/*[0]*/.push( "\"" + keycode + "\"" + "" + " ".repeat(pad) );
+				//layer_data += keycode + "," + " ".repeat( Math.max( 0, pad ) );
+				layer_data += keycode;
+				if (key < (t - 1)) {
+					layer_data += "," + " ".repeat(Math.max(0, pad));
+				} else {
+					layer_data += " ".repeat(Math.max(0, pad + 1)) + "\\";
+				}
+
+
+				/************************
+				 ** Build switch matrix **
+				 ************************/
+				if (kb.keys[key].row > 9) {
+					var r = String.fromCharCode(55 + kb.keys[key].row);
+				} else {
+					var r = kb.keys[key].row;
+				}
+				if (kb.keys[key].col > 9) {
+					var c = String.fromCharCode(55 + kb.keys[key].col);
+				} else {
+					var c = kb.keys[key].col;
+				}
+				switch_matrix_id = "K" + r + c;
+				switch_matrix[kb.keys[key].row][kb.keys[key].col] = switch_matrix_id;
+				switch_layout[key] = switch_matrix_id +" ".repeat( Math.max(0, 5-switch_matrix_id) );
+
+
+				/***********************
+				 ** add info.json data **
+				 ***********************/
+				if (info_data_l < t) {
+					if ((key > 0) && (kb.keys[key].state.y > kb.keys[key - 1].state.y)) {
+						//info_data += "],\n[\n";
+					}
+					/*if (key == 0) {
+						var x = 0;
+						var y = 0;
+					} else {
+						var x = kb.keys[key].state.x - (kb.keys[key - 1].state.x + kb.keys[key - 1].state.w);
+						var y = kb.keys[key].state.y - kb.keys[key - 1].state.y;
+					}
+					info_data += "" +
+						"{x:" + x + "," +
+						"y:" + Math.min(0, y) + "," +
+						"w:" + kb.keys[key].state.w + "," +
+						"h:" + kb.keys[key].state.h + "}," +
+						//"\""+ kb.keys[key].keycodes[0].id +"\",\n";
+						"\"K" + kb.keys[key].row.toString(16).toUpperCase() + kb.keys[key].col.toString(16).toUpperCase() + "\",\n";*/
+					var info_data_key = [
+						"K"+ kb.keys[key].row.toString(16).toUpperCase() + kb.keys[key].col.toString(16).toUpperCase(),
+						kb.keys[key].state.x,
+						kb.keys[key].state.y,
+						kb.keys[key].state.w,
+						kb.keys[key].state.h
+					];
+					info_data += "        {\"label\":\""+ info_data_key[0] +"\", "+
+						"\"x\":"+ info_data_key[1] +", "+
+						"\"y\":"+ info_data_key[2] +", "+
+						"\"w\":"+ info_data_key[3] +", "+
+						"\"h\":"+ info_data_key[4] +"},\n"
+						;
+					//console.log( kb.keys[key].row.toString(16) + "/" + kb.keys[key].col.toString(16) );
+					info_data_l++;
+				}
+
+				// wrap the line every 10 keys
+				if (key % cols == (cols - 1)) {
+					layer_data += "\\\n    ";
+				}
+			}
+
+			layer_data = layer_data.replace(
+				/, +\n  \)$/g,
+				"  \\\n  )"
+			) + "\n  ),\n";
+		}
+
+		/*
+			Capture Diode Direction
+		*/
+		var dd = obj.keyboard.settings.diodeDirection;
+		if (dd == 0) {
+			dd = "COL2ROW";
+		} else if (dd == 1) {
+			dd = "ROW2COL";
+		} else {
+			dd = "CUSTOM_MATRIX";
+		}
+
+		/*
+			Capture Bootloader Size
+		*/
+		var bs = obj.keyboard.settings.bootloaderSize;
+		if (bs == 0) {
+			bs = "512";
+		} else if (bs == 1) {
+			bs = "2048";
+		} else if (bs == 2) {
+			bs = "4096";
+		} else if (bs == 3) {
+			bs = "8192";
+		}
+
+		text_o.value = "" +
+			"#include QMK_KEYBOARD_H\n" +
+			"\n" +
+			"const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {\n" +
+			"  // keys per layer: " + t + "\n" +
+			layer_data +
+			"};\n";
+
+		text_config.value = "#pragma once\n\n#include \"config_common.h\"\n\n/* USB Device descriptor parameter */\n#define VENDOR_ID       0xFEED\n#define PRODUCT_ID      0x0000\n#define DEVICE_VER      0x0001\n#define MANUFACTURER    You\n#define PRODUCT         " + obj.keyboard.settings.name + "\n#define DESCRIPTION     A custom keyboard\n\n/* key matrix size */\n" +
+			"#define MATRIX_ROWS " + obj.keyboard.pins.row.length + "\n" +
+			"#define MATRIX_COLS " + obj.keyboard.pins.col.length + "\n" +
+			"\n" +
+			"/*\n * Keyboard Matrix Assignments\n *\n * Change this to how you wired your keyboard\n * COLS: AVR pins used for columns, left to right\n * ROWS: AVR pins used for rows, top to bottom\n * DIODE_DIRECTION: COL2ROW = COL = Anode (+), ROW = Cathode (-, marked on diode)\n *                  ROW2COL = ROW = Anode (+), COL = Cathode (-, marked on diode)\n *\n*/\n" +
+			"#define MATRIX_ROW_PINS { " + obj.keyboard.pins.row.toString().split(',').join(', ') + " }\n" +
+			"#define MATRIX_COL_PINS { " + obj.keyboard.pins.col.toString().split(',').join(', ') + " }\n" +
+			"\n" +
+			"#define DIODE_DIRECTION " + dd + "\n" +
+			"\n" +
+			"// #define BACKLIGHT_PIN " + obj.keyboard.pins.led + "\n" +
+			"// #define BACKLIGHT_BREATHING\n" +
+			"// #define BACKLIGHT_LEVELS " + obj.keyboard.settings.backlightLevels + "\n" +
+			"\n" +
+			"// #define RGB_DI_PIN " + obj.keyboard.pins.rgb + "\n// #ifdef RGB_DI_PIN\n//   #define RGBLED_NUM 16\n//   #define RGBLIGHT_HUE_STEP 8\n//   #define RGBLIGHT_SAT_STEP 8\n//   #define RGBLIGHT_VAL_STEP 8\n//   #define RGBLIGHT_LIMIT_VAL 255 /* The maximum brightness level */\n//   #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */\n// /*== all animations enable ==*/\n//   #define RGBLIGHT_ANIMATIONS\n// /*== or choose animations ==*/\n//   #define RGBLIGHT_EFFECT_BREATHING\n//   #define RGBLIGHT_EFFECT_RAINBOW_MOOD\n//   #define RGBLIGHT_EFFECT_RAINBOW_SWIRL\n//   #define RGBLIGHT_EFFECT_SNAKE\n//   #define RGBLIGHT_EFFECT_KNIGHT\n//   #define RGBLIGHT_EFFECT_CHRISTMAS\n//   #define RGBLIGHT_EFFECT_STATIC_GRADIENT\n//   #define RGBLIGHT_EFFECT_RGB_TEST\n//   #define RGBLIGHT_EFFECT_ALTERNATING\n// #endif\n";
+
+		text_info.value = ""+
+			"{\n" +
+			"  \"keyboard_name\": \""+ obj.keyboard.settings.name +"\",\n"+
+			"  \"url\": \"\",\n"+
+			"  \"maintainer\": \"qmk\",\n"+
+			"  \"width\": "+ obj.keyboard.bounds.max.x +",\n"+
+			"  \"height\": "+ obj.keyboard.bounds.max.y +",\n"+
+			"  \"layouts\": {\n"+
+			"    \"LAYOUT\": {\n"+
+			"      \"layout\": [\n"+
+			info_data + "\n" +
+			"      ]\n"+
+			"    }\n"+
+			"  }\n"+
+			"}\n";
+
+		/***********************************
+		** SWITCH MATRIX ERROR CORRECTION **
+		***********************************/
+		for ( i=0; i<switch_matrix.length; i++ ) {
+			for ( j=0; j<switch_matrix[i].length; j++ ) {
+				if ( switch_matrix[i][j] == null ) {
+					switch_matrix[i][j] = "KC_NO";
+				}
+			}
+		}
+		console.log(switch_matrix);
+		console.log("switch_matrix length: "+ switch_matrix.length);
+		console.log(switch_layout);
+
+		text_matrix.value = "#define LAYOUT( \\\n" +
+			"  "+ switch_layout.join(', ') +
+			" \\\n) { \\\n";
+		for ( i=0; i<switch_matrix.length; i++ ) {
+			text_matrix.value += "  { "+ switch_matrix[i].join(', ') +" }, \\\n";
+		}
+		text_matrix.value += "}\n";
+		text_matrix.value = text_matrix.value
+			/*.replace(/(K[0-9A-Z]{2})/g, "$1  ")
+			.replace(/( +),/g, ",$1")*/
+			.replace(/\}, \\\n\}/, "}  \\\n\}")
+			;
+
+
+		// error correction
+		text_info.value = text_info.value
+			//.replace(/x:-[0-9\.]+/g, "x:0")
+			//.replace(/[xy]:0,/g, "")
+			.replace(/,\n\n+/g, "\n")
+			.replace(/, +"h":1\}/g, "}")
+			.replace(/, +"w":1\}/g, "}")
+			;
+	}
+);
+</script>
+
+</body>
+</html>
+

@@ -31,8 +31,8 @@
 			<label for="input">Copy the output to the necessary file:</label><br>
 			<textarea id="output" spellcheck="false" placeholder="keymap.c"></textarea>
 			<textarea id="config" spellcheck="false" placeholder="config.h"></textarea>
-			<textarea id="info" spellcheck="false" placeholder="KLE Raw Data for building a QMK info.json file"></textarea>
-			<textarea id="matrix" spellcheck="false" placeholder="Switch Matrix"></textarea>
+			<textarea id="info" spellcheck="false" placeholder="info.json"></textarea>
+			<textarea id="matrix" spellcheck="false" placeholder="Switch Matrix for <keyboard>.h"></textarea>
 		</td>
 	</tr>
 </table>
@@ -146,9 +146,9 @@ document.getElementsByTagName('button')[0].addEventListener(
 				 ***********************/
 				if (info_data_l < t) {
 					if ((key > 0) && (kb.keys[key].state.y > kb.keys[key - 1].state.y)) {
-						info_data += "],\n[\n";
+						//info_data += "],\n[\n";
 					}
-					if (key == 0) {
+					/*if (key == 0) {
 						var x = 0;
 						var y = 0;
 					} else {
@@ -161,7 +161,20 @@ document.getElementsByTagName('button')[0].addEventListener(
 						"w:" + kb.keys[key].state.w + "," +
 						"h:" + kb.keys[key].state.h + "}," +
 						//"\""+ kb.keys[key].keycodes[0].id +"\",\n";
-						"\"K" + kb.keys[key].row.toString(16).toUpperCase() + kb.keys[key].col.toString(16).toUpperCase() + "\",\n";
+						"\"K" + kb.keys[key].row.toString(16).toUpperCase() + kb.keys[key].col.toString(16).toUpperCase() + "\",\n";*/
+					var info_data_key = [
+						"K"+ kb.keys[key].row.toString(16).toUpperCase() + kb.keys[key].col.toString(16).toUpperCase(),
+						kb.keys[key].state.x,
+						kb.keys[key].state.y,
+						kb.keys[key].state.w,
+						kb.keys[key].state.h
+					];
+					info_data += "        {\"label\":\""+ info_data_key[0] +"\", "+
+						"\"x\":"+ info_data_key[1] +", "+
+						"\"y\":"+ info_data_key[2] +", "+
+						"\"w\":"+ info_data_key[3] +", "+
+						"\"h\":"+ info_data_key[4] +"},\n"
+						;
 					//console.log( kb.keys[key].row.toString(16) + "/" + kb.keys[key].col.toString(16) );
 					info_data_l++;
 				}
@@ -228,10 +241,21 @@ document.getElementsByTagName('button')[0].addEventListener(
 			"\n" +
 			"// #define RGB_DI_PIN " + obj.keyboard.pins.rgb + "\n// #ifdef RGB_DI_PIN\n//   #define RGBLED_NUM 16\n//   #define RGBLIGHT_HUE_STEP 8\n//   #define RGBLIGHT_SAT_STEP 8\n//   #define RGBLIGHT_VAL_STEP 8\n//   #define RGBLIGHT_LIMIT_VAL 255 /* The maximum brightness level */\n//   #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */\n// /*== all animations enable ==*/\n//   #define RGBLIGHT_ANIMATIONS\n// /*== or choose animations ==*/\n//   #define RGBLIGHT_EFFECT_BREATHING\n//   #define RGBLIGHT_EFFECT_RAINBOW_MOOD\n//   #define RGBLIGHT_EFFECT_RAINBOW_SWIRL\n//   #define RGBLIGHT_EFFECT_SNAKE\n//   #define RGBLIGHT_EFFECT_KNIGHT\n//   #define RGBLIGHT_EFFECT_CHRISTMAS\n//   #define RGBLIGHT_EFFECT_STATIC_GRADIENT\n//   #define RGBLIGHT_EFFECT_RGB_TEST\n//   #define RGBLIGHT_EFFECT_ALTERNATING\n// #endif\n";
 
-		text_info.value = "" +
-			"[\n" +
+		text_info.value = ""+
+			"{\n" +
+			"  \"keyboard_name\": \""+ obj.keyboard.settings.name +"\",\n"+
+			"  \"url\": \"\",\n"+
+			"  \"maintainer\": \"qmk\",\n"+
+			"  \"width\": \""+ obj.keyboard.bounds.max.x +"\",\n"+
+			"  \"height\": \""+ obj.keyboard.bounds.max.y +"\",\n"+
+			"  \"layouts\": {\n"+
+			"    \"LAYOUT\": {\n"+
+			"      \"layout\": [\n"+
 			info_data + "\n" +
-			"]\n";
+			"      ]\n"+
+			"    }\n"+
+			"  }\n"+
+			"}\n";
 
 		/***********************************
 		** SWITCH MATRIX ERROR CORRECTION **
@@ -263,9 +287,12 @@ document.getElementsByTagName('button')[0].addEventListener(
 
 		// error correction
 		text_info.value = text_info.value
-			.replace(/x:-[0-9\.]+/g, "x:0")
-			.replace(/[xy]:0,/g, "")
-			.replace(/,[\n]+\]/g, "\n]");
+			//.replace(/x:-[0-9\.]+/g, "x:0")
+			//.replace(/[xy]:0,/g, "")
+			.replace(/,\n\n+/g, "\n")
+			.replace(/, +"h":1\}/g, "}")
+			.replace(/, +"w":1\}/g, "}")
+			;
 	}
 );
 </script>

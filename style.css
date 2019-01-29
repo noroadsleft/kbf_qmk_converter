@@ -43,9 +43,12 @@ textarea {
   border: 1px inset #111;
   box-sizing: border-box;
 }
-#input, #output, #config, #info {
+#input, #output, #config, #info, #matrix {
   height: 100%;
   border: 1px solid #000;
+}
+#output, #config, #info, #matrix {
+  white-space: pre;
 }
 #input {
   /*background-color: #300;
@@ -57,17 +60,22 @@ textarea {
 #output {
   /*background-color: #030;
   border-color: #0c0;*/
-  width: 33%;
-  max-width: 33%;
-  min-width: 33%;
+  width: 24%;
+  max-width: 24%;
+  min-width: 24%;
 }
 #config {
   /*background-color: #171700;
   border-color: #cccc00;*/
-  width: 33%;
+  width: 24%;
 }
 #info {
   /*background-color: #171700;
   border-color: #cccc00;*/
-  width: 33%;
+  width: 24%;
+}
+#matrix {
+  /*background-color: #171700;
+  border-color: #cccc00;*/
+  width: 24%;
 }

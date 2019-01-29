@@ -248,12 +248,18 @@ document.getElementsByTagName('button')[0].addEventListener(
 		console.log(switch_layout);
 
 		text_matrix.value = "#define LAYOUT( \\\n" +
-			switch_layout +
-			") {\n";
+			"  "+ switch_layout.join(', ') +
+			" \\\n) { \\\n";
 		for ( i=0; i<switch_matrix.length; i++ ) {
 			text_matrix.value += "  { "+ switch_matrix[i].join(', ') +" }, \\\n";
 		}
 		text_matrix.value += "}\n";
+		text_matrix.value = text_matrix.value
+			/*.replace(/(K[0-9A-Z]{2})/g, "$1  ")
+			.replace(/( +),/g, ",$1")*/
+			.replace(/\}, \\\n\}/, "}  \\\n\}")
+			;
+
 
 		// error correction
 		text_info.value = text_info.value

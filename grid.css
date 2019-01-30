@@ -1,0 +1,25 @@
+div.wrapper {
+	display: grid;
+	grid-template-rows: 250px 38px auto;
+	grid-template-columns: 1fr;
+	grid-gap: 2px;
+	grid-auto-rows: minmax(100px, auto);
+}
+.one, .two, .three {
+}
+.one {
+	grid-row: 1;
+}
+.two {
+	grid-row: 2;
+}
+.three {
+	grid-row: 3;
+}
+
+
+div.inset {
+	display: grid;
+	grid-template-rows: auto auto repeat(4, 300px);
+	grid-template-columns: 1fr;
+}

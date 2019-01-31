@@ -18,39 +18,60 @@ body {
 
 h1, h2 { margin: 0; }
 
+.panel1 {
+	padding: 8px 0;
+}
+.panel1 input {
+	background-color: hsl(200, 100%, 96%);
+	color: hsl(200, 60%, 50%);
+	font-size: large;
+	padding: 8px 100px 8px 8px;
+	border: 2px solid hsl(200, 60%, 50%);
+	border-radius: 4px;
+}
+
 .panel3 ul {
 	list-style-type: none;
 	padding: 0;
+	border-bottom: 1px solid hsl(200, 60%, 50%);
 	margin: 0;
 }
 .panel3 ul li {
 	cursor: pointer;
 	display: inline-block;
-	background-color: #eee;
-	padding: 0 24px;
-	border: 1px solid #000;
-	border-width: 1px 1px 0;
+	background-color: hsl(0, 0%, 96%);
+	color: hsl(0, 0%, 50%);
+	text-align: center;
+	width: 120px;
+	padding: 4px;
+	border: 2px solid hsl(0, 0%, 50%);
+	border-bottom-width: 0;
 	border-radius: 4px 4px 0 0;
 }
 .panel3 ul li:hover {
-	background-color: #dde;
+	background-color: #ded;
+	border-color: #dfd;
 }
 .panel3 ul li.selected {
-	background-color: #ccf;
+	background-color: hsl(200, 100%, 96%);
+	color: hsl(200, 60%, 50%);
 	font-weight: bold;
+	border-color: hsl(200, 60%, 50%);
 }
 
 
 div.inset {
 	background-color: #ddd;
 	padding: 4px;
-	border: 1px solid #000;
+	border: 2px solid hsl(200, 100%, 50%);
+	border-width: 1px 2px 2px;
 }
 
 .panel2 {
+	display: none;
 	padding: 8px 0;
 }
-.panel2 button, .panel1 input, .panel1 button {
+.panel2 button, .panel1 button {
 	font-size: large;
 	padding: 0 16px;
 }

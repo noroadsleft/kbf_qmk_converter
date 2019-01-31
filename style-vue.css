@@ -84,11 +84,12 @@ textarea {
 	border: 1px inset #111;
 	box-sizing: border-box;
 	padding: 8px;
-	width: 1290px;
-	min-width: 1290px;
-	max-width: 1290px;
-	min-height: 580px;
-	max-height: 580px;
+	width: 1280px;
+	min-width: 1280px;
+	max-width: 1280px;
+	min-height: 300px;
+	max-height: 640px;
+	overflow-y: auto;
 }
 #input, #config, #keymap, #matrix, #info {
 	min-height: 250px;

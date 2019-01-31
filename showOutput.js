@@ -66,7 +66,6 @@ document.getElementById('submit').addEventListener(
 		var kb = obj.keyboard;
 		var cols = obj.keyboard.cols;
 
-		// 9 - obj.keyboard.keys[0].keycodes[0].id.length;
 		var layer_data = "";
 		var info_data = "";
 		var info_data_l = 0;
@@ -383,19 +382,45 @@ document.getElementById('submit').addEventListener(
 		//console.log("switch_matrix length: "+ switch_matrix.length);
 		//console.log(switch_layout);
 
-		text_matrix.value = "#define LAYOUT( \\\n" +
-			"  "+ switch_layout.join(', ') +
-			" \\\n) { \\\n";
-		for ( i=0; i<switch_matrix.length; i++ ) {
-			text_matrix.value += "  { "+ switch_matrix[i].join(', ') +" }, \\\n";
-		}
-		text_matrix.value += "}\n";
-		text_matrix.value = text_matrix.value
-			/*.replace(/(K[0-9A-Z]{2})/g, "$1  ")
-			.replace(/( +),/g, ",$1")*/
-			.replace(/\}, \\\n\}/, "}  \\\n\}")
-			;
+		// Start layout macro definition
+		text_matrix.value = "#define LAYOUT( \\\n";
 
+		// Add each row
+		for ( i=0; i<switch_matrix.length; i++ ) {
+			// Replace instances of KC_NO with four spaces in the physical layout section
+			text_matrix.value += "  "+ switch_matrix[i].join(', ').replace(/KC_NO,/g, "    ") +", \\\n";
+		}
+
+		// Physical layout is done
+		text_matrix.value += ") { \\\n";
+
+		// Remove the comma after the last switch's argument
+		text_matrix.value = text_matrix.value.replace(/, \\\n\)/, "  \\\n\)");
+
+		// Build the electrical matrix
+		for ( i=0; i<switch_matrix.length; i++ ) {
+			// Electrical matrix rows
+			// Switch positions have two spaces added to make them equal length to any KC_NO instances
+			text_matrix.value += "  { "+ switch_matrix[i].join(', ').replace(/K([0-9A-Z]{2})(,?)/g, "K$1$2  ") +" }, \\\n";
+		}
+
+		// Close the macro definition
+		text_matrix.value += "}\n";
+		// Remove the comma after the last matrix row's array
+		text_matrix.value = text_matrix.value.replace(/\}, \\\n\}/, "}  \\\n\}");
+
+		// Here we check if any of the positions in the last column of the matrix are unoccupied
+		// If all are present, remove the extra spaces at the end of each row of the electrical matrix
+		var clean = true;
+		for ( i=0; i<switch_matrix.length; i++ ) {
+			if ( switch_matrix[i][cols] == "KC_NO" ) {
+				// Switch `clean` to false if we find a KC_NO
+				clean = false;
+			}
+		}
+		if ( clean == true ) {
+		text_matrix.value = text_matrix.value.replace(/ {3}\}/g, " \}");
+		}
 
 		// error correction
 		text_info.value = text_info.value

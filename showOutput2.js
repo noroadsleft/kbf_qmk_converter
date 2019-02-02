@@ -16,12 +16,12 @@ document.getElementById("c_board").addEventListener(
 		output("keyboard.h")
 	}
 );
-/*document.getElementById("c_keymap").addEventListener(
+document.getElementById("c_keymap").addEventListener(
 	"click",
 	function(){
 		output("keymap.c")
 	}
-);*/
+);
 document.getElementById("c_info").addEventListener(
 	"click",
 	function(){
@@ -218,32 +218,105 @@ document.getElementById('submit').addEventListener(
 		/*************
 		** keymap.c **
 		*************/
+		var customKeycodes = [];
 		var keymapData = "";
 		var keymapOutput = [
 			"#include QMK_KEYBOARD_H",
 			"",
-			"const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {",
 		];
 
 		for ( layer=0; layer<=15; layer++ ) {
 			//console.log( "Processing Layer "+ layer +"..." );
-			var layerData = "  ["+ layer +"] = LAYOUT( \\\n";
+			var layerData = "  ["+ layer +"] = LAYOUT( \\\n    ";
 			for ( key=0; key<keys; key++ ) {
 				var matrixRow = obj.keyboard.keys[key].row
 				var matrixCol = obj.keyboard.keys[key].col;
 				var keycode = obj.keyboard.keys[key].keycodes[layer].id;
-				layerData += keycode +","+ " ".repeat( Math.max(0, (8 - keycode.length) ) );
+				switch ( keycode ) {
+					case "MO()":
+					case "TG()":
+					case "TO()":
+					case "TT()":
+					case "DF()":
+					case "OSL()":
+						var keycode = keycode.replace(/\(\)/, "("+ kb.keys[key].keycodes[layer].fields[0] +")");
+						break;
+					case "LCTL()":
+					case "LSFT()":
+					case "LALT()":
+					case "LGUI()":
+					case "RCTL()":
+					case "RSFT()":
+					case "RALT()":
+					case "RGUI()":
+						var keycodeValue = kb.keys[key].keycodes[layer].fields[0].id;
+						//console.log( "keycodeValue: "+ keycodeValue );
+						if ( keycodeValue.match(/^[LR](CTL|SFT|ALT|GUI)/) != null ) {
+							var keycode = keycode.replace(/\(\)/, "("+ keycodeValue +")");
+
+							if ( keycodeValue.match(/([LR](CTL|SFT|ALT|GUI)\(\))/) != null ) {
+								var keycodeValue = kb.keys[key].keycodes[layer].fields[0].fields[0].id;
+								//console.log( "keycodeValue: "+ keycodeValue );
+								var keycode = keycode.replace(/\(\)/, "("+ keycodeValue +")");
+								if ( keycode.match(/([LR](CTL|SFT|ALT|GUI)\(\))/) != null ) {
+									var keycodeValue = kb.keys[key].keycodes[layer].fields[0].fields[0].fields[0].id;
+									//console.log( "keycodeValue: "+ keycodeValue );
+									var keycode = keycode.replace(/\(\)/, "("+ keycodeValue +")");
+									if ( keycode.match(/([LR](CTL|SFT|ALT|GUI)\(\))/) != null ) {
+										var keycodeValue = kb.keys[key].keycodes[layer].fields[0].fields[0].fields[0].fields[0].id;
+										//console.log( "keycodeValue: "+ keycodeValue );
+										var keycode = keycode.replace(/\(\)/, "("+ keycodeValue +")");
+										if ( keycode.match(/([LR](CTL|SFT|ALT|GUI)\(\))/) != null ) {
+											var keycodeValue = kb.keys[key].keycodes[layer].fields[0].fields[0].fields[0].fields[0].fields[0].id;
+											//console.log( "keycodeValue: "+ keycodeValue );
+											var keycode = keycode.replace(/\(\)/, "("+ keycodeValue +")");
+										}
+									}
+								}
+							}
+
+						}
+						//console.log( "POST: "+ keycode );
+						break;
+				}
+				if ( keycode.length > 7 ) {
+					console.log( keycode.length );
+					var shortCode = keycode
+						.replace(/[LR]CTL\(/g, "C" )
+						.replace(/[LR]SFT\(/g, "S" )
+						.replace(/[LR]ALT\(/g, "A" )
+						.replace(/[LR]GUI\(/g, "G" )
+						.replace(/KC_([A-Z0-9_]+)[\)]+/g, "_$1" )
+						//.replace(/([CSAG_]+)__/g, "$1".replace(/_/g, "") )
+						;
+					console.log( shortCode );
+					customKeycodes.push( "#define "+ shortCode +" ".repeat(8 - shortCode.length) + keycode );
+					layerData += shortCode +","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) );
+				} else {
+					layerData += keycode +","+ " ".repeat( Math.max(0, (8 - keycode.length) ) );
+				}
+				/*if ( key % cols == cols-1 ) {
+					if ( key < keys-2 ) {
+						layerData += "\\\n    ";
+					} else {
+						layerData += "\\"
+					}
+				}*/
 				matrix[matrixRow][matrixCol] = "K"+ base32hex.substr( obj.keyboard.keys[key].row , 1) + base32hex.substr( obj.keyboard.keys[key].col , 1) +"  ";
 			}
 			layerData += "\n  ),\n";
 			keymapData += layerData;
 		}
 
-		keymapOutput.push([
+		keymapOutput.push(
+			customKeycodes.join('\n') +"\n",
+			//"// keys per layer: " + keys,
+			"const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {",
+		);
+		keymapOutput.push(
 			keymapData,
-			"  // keys per layer: " + keys + "",
 			"};"
-		]);
+		);
 		/*
 		text_o.value = [
 			layer_data.replace(/\\\\/g, "\\").replace(/\\\n[\s\n]+\)/g, "\\\n  \)") +

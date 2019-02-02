@@ -16,12 +16,12 @@ document.getElementById("c_board").addEventListener(
 		output("keyboard.h")
 	}
 );
-document.getElementById("c_keymap").addEventListener(
+/*document.getElementById("c_keymap").addEventListener(
 	"click",
 	function(){
 		output("keymap.c")
 	}
-);
+);*/
 document.getElementById("c_info").addEventListener(
 	"click",
 	function(){

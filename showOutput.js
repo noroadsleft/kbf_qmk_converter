@@ -388,7 +388,9 @@ document.getElementById('submit').addEventListener(
 		// Add each row
 		for ( i=0; i<switch_matrix.length; i++ ) {
 			// Replace instances of KC_NO with four spaces in the physical layout section
-			text_matrix.value += "  "+ switch_matrix[i].join(', ').replace(/KC_NO,/g, "    ") +", \\\n";
+			//console.log( switch_matrix[i].join(' | ') );
+			text_matrix.value += "  "+ switch_matrix[i].join(', ').replace(/KC_NO,/g, "    ").replace(/KC_NO/g, "   ") +", \\\n";
+			text_matrix.value = text_matrix.value.replace(/,( +),/g, ",$1 ");
 		}
 
 		// Physical layout is done
@@ -419,7 +421,7 @@ document.getElementById('submit').addEventListener(
 			}
 		}
 		if ( clean == true ) {
-		text_matrix.value = text_matrix.value.replace(/ {3}\}/g, " \}");
+			text_matrix.value = text_matrix.value.replace(/ {3}\}/g, " \}");
 		}
 
 		// error correction

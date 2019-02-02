@@ -4,6 +4,7 @@
 
 <link rel="icon" type="image/gif" href="./kbfqmk.gif">
 <link rel="stylesheet" href="./style-vue.css" type="text/css">
+<link href="./themes/prism.css" rel="stylesheet" />
 
 <!-- production version, optimized for size and speed -->
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -33,17 +34,14 @@
 	<div class="panel3 three">
 		<ul>
 			<li id="c_config" class="selected">config.h</li>
+			<li id="c_rules">rules.mk</li>
 			<li id="c_board">&lt;keyboard&gt;.h</li>
 			<li id="c_keymap">keymap.c</li>
 			<li id="c_info">info.json</li>
 		</ul>
 		<div class="inset">
 			<label for="single">Copy the output to the necessary file:</label><br>
-			<textarea id="single" spellcheck="false" placeholder="" readonly></textarea>
-			<textarea id="config" spellcheck="false" placeholder="config.h" readonly></textarea>
-			<textarea id="matrix" spellcheck="false" placeholder="Switch Matrix for <keyboard>.h" readonly></textarea>
-			<textarea id="keymap" spellcheck="false" placeholder="keymap.c" readonly></textarea>
-			<textarea id="info" spellcheck="false" placeholder="info.json" readonly></textarea>
+			<pre id="editor"></pre>
 		</div>
 	</div>
 </div>
@@ -56,7 +54,7 @@
 
 <!-- <script type="text/javascript" src="./file-handling.js"></script> -->
 
-<script src="./showOutput.js"></script>
+<script src="./showOutput2.js"></script>
 
 </body>
 </html>

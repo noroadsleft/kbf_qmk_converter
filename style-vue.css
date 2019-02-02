@@ -143,3 +143,20 @@ pre#editor code:nth-child(odd) {
 pre#editor code:nth-child(even) {
 	background-color: #39c3;
 }
+
+
+
+#footer {
+	background-color: #ffebeb;
+	color: #803333;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+	padding: 16px;
+	border-top: 2px solid #803333;
+}
+#footer  p {
+	margin: 0;
+}

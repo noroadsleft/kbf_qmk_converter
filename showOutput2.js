@@ -110,8 +110,9 @@ document.getElementById('submit').addEventListener(
 		//console.log( matrix );
 		var layoutMacroOutput = [
 			"#pragma once",
+			"",
 			"#include \"quantum.h\"",
-			"#define _x_ KC_NO",
+			"",
 			"#define LAYOUT( \\",
 			") { \\",
 			"}"
@@ -525,7 +526,7 @@ document.getElementById('submit').addEventListener(
 		}
 		for ( i = rows-1; i >= 0; i-- ) {
 			// inserts at 5th index position
-			layoutMacroOutput.splice(5, 0, "  {   "+ matrix[i].join(', ').replace(/( +),/g, ",$1") +" }, \\" );
+			layoutMacroOutput.splice(6, 0, "  {   "+ matrix[i].join(', ').replace(/( +),/g, ",$1") +" }, \\" );
 		}
 		/*
 		for ( i = rows-1; i >= 0; i-- ) {
@@ -543,9 +544,9 @@ document.getElementById('submit').addEventListener(
 		for ( i = layoutString.length-1; i>=0; i-- ) {
 			if ( i == layoutString.length-1 ) {
 				//console.log( layoutString[i] );
-				layoutMacroOutput.splice(4, 0, "  "+ layoutString[i].replace(/, $/, "") +"  \\" );
+				layoutMacroOutput.splice(5, 0, "  "+ layoutString[i].replace(/, $/, "") +"  \\" );
 			} else {
-				layoutMacroOutput.splice(4, 0, "  "+ layoutString[i] +"" );
+				layoutMacroOutput.splice(5, 0, "  "+ layoutString[i] +"" );
 			}
 		}
 
@@ -625,6 +626,7 @@ document.getElementById('submit').addEventListener(
 		};
 
 		output("config.h");
+		highlightTab("config");
 
 	}
 );

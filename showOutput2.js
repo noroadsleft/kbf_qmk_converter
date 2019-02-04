@@ -19,37 +19,51 @@ function selectElementText(el, win) {
 
 //selectElementText(document.getElementById("someElement"));
 //selectElementText(elementInIframe, iframe.contentWindow);
-
+function highlightTab(tab) {
+	var el = document.getElementsByClassName('panel3')[0].getElementsByTagName('ul')[0];
+	for ( i=0; i<el.getElementsByTagName('li').length; i++ ) {
+		if ( el.getElementsByTagName('li')[i].getAttribute('id') == "c_"+tab ) {
+			el.getElementsByTagName('li')[i].setAttribute('class', "selected");
+		} else {
+			el.getElementsByTagName('li')[i].removeAttribute('class');
+		}
+	}
+}
 
 
 document.getElementById("c_config").addEventListener(
 	"click",
 	function(){
-		output("config.h")
+		output("config.h");
+		highlightTab("config");
 	}
 );
 document.getElementById("c_rules").addEventListener(
 	"click",
 	function(){
-		output("rules.mk")
+		output("rules.mk");
+		highlightTab("rules");
 	}
 );
 document.getElementById("c_board").addEventListener(
 	"click",
 	function(){
-		output("keyboard.h")
+		output("keyboard.h");
+		highlightTab("board");
 	}
 );
 document.getElementById("c_keymap").addEventListener(
 	"click",
 	function(){
-		output("keymap.c")
+		output("keymap.c");
+		highlightTab("keymap");
 	}
 );
 document.getElementById("c_info").addEventListener(
 	"click",
 	function(){
-		output("info.json")
+		output("info.json");
+		highlightTab("info");
 	}
 );
 

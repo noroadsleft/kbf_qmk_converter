@@ -49,8 +49,8 @@ h1, h2 { margin: 0; }
 	border-radius: 4px 4px 0 0;
 }
 .panel3 ul li:hover {
-	background-color: #ded;
-	border-color: #dfd;
+	background-color: hsl(120, 100%, 96%);
+	border-color: hsl(120, 43%, 35%);
 }
 .panel3 ul li.selected {
 	background-color: hsl(200, 100%, 96%);

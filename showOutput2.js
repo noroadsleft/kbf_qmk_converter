@@ -1,3 +1,27 @@
+/***************************************
+** https://stackoverflow.com/a/987376 **
+***************************************/
+function selectElementText(el, win) {
+    win = win || window;
+    var doc = win.document, sel, range;
+    if (win.getSelection && doc.createRange) {
+        sel = win.getSelection();
+        range = doc.createRange();
+        range.selectNodeContents(el);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (doc.body.createTextRange) {
+        range = doc.body.createTextRange();
+        range.moveToElementText(el);
+        range.select();
+    }
+}
+
+//selectElementText(document.getElementById("someElement"));
+//selectElementText(elementInIframe, iframe.contentWindow);
+
+
+
 document.getElementById("c_config").addEventListener(
 	"click",
 	function(){
@@ -69,7 +93,7 @@ document.getElementById('submit').addEventListener(
 				matrix[row][col] = "KC_NO";
 			}
 		}
-		console.log( matrix );
+		//console.log( matrix );
 		var layoutMacroOutput = [
 			"#pragma once",
 			"#include \"quantum.h\"",
@@ -140,6 +164,49 @@ document.getElementById('submit').addEventListener(
 			"F_USB = $(F_CPU)",
 			"OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT"
 		];
+		rulesOutput.push( "", "" );
+		rulesOutput.push(
+			"# Bootloader selection",
+			"#   Teensy       halfkay",
+			"#   Pro Micro    caterina",
+			"#   Atmel DFU    atmel-dfu",
+			"#   LUFA DFU     lufa-dfu",
+			"#   QMK DFU      qmk-dfu",
+			"#   atmega32a    bootloadHID",
+			"BOOTLOADER = atmel-dfu",
+			"",
+			"",
+			"# If you don't know the bootloader type, then you can specify the",
+			"# Boot Section Size in *bytes* by uncommenting out the OPT_DEFS line",
+			"#   Teensy halfKay      512",
+			"#   Teensy++ halfKay    1024",
+			"#   Atmel DFU loader    4096",
+			"#   LUFA bootloader     4096",
+			"#   USBaspLoader        2048",
+			"# OPT_DEFS += -DBOOTLOADER_SIZE=4096",
+			"",
+			"",
+			"# Build Options",
+			"#   change yes to no to disable",
+			"#",
+			"BOOTMAGIC_ENABLE = no        # Virtual DIP switch configuration(+1000)",
+			"MOUSEKEY_ENABLE = yes        # Mouse keys(+4700)",
+			"EXTRAKEY_ENABLE = yes        # Audio control and System control(+450)",
+			"CONSOLE_ENABLE = yes         # Console for debug(+400)",
+			"COMMAND_ENABLE = yes         # Commands for debug and configuration",
+			"# Do not enable SLEEP_LED_ENABLE. it uses the same timer as BACKLIGHT_ENABLE",
+			"SLEEP_LED_ENABLE = no        # Breathing sleep LED during USB suspend",
+			"# if this doesn't work, see here: https://github.com/tmk/tmk_keyboard/wiki/FAQ#nkro-doesnt-work",
+			"NKRO_ENABLE = no             # USB Nkey Rollover",
+			"BACKLIGHT_ENABLE = no        # Enable keyboard backlight functionality on B7 by default",
+			"RGBLIGHT_ENABLE = no         # Enable keyboard RGB underglow",
+			"MIDI_ENABLE = no             # MIDI support (+2400 to 4200, depending on config)",
+			"UNICODE_ENABLE = no          # Unicode",
+			"BLUETOOTH_ENABLE = no        # Enable Bluetooth with the Adafruit EZ-Key HID",
+			"AUDIO_ENABLE = no            # Audio output on port C6",
+			"FAUXCLICKY_ENABLE = no       # Use buzzer to emulate clicky switches",
+			"HD44780_ENABLE = no          # Enable support for HD44780 based LCDs (+400)"
+		);
 
 
 		/*************
@@ -241,6 +308,59 @@ document.getElementById('submit').addEventListener(
 					case "OSL()":
 						var keycode = keycode.replace(/\(\)/, "("+ kb.keys[key].keycodes[layer].fields[0] +")");
 						break;
+					case "LT()":
+						var keycode = keycode.replace(/\(\)/, "("+ kb.keys[key].keycodes[layer].fields[0] +", "+ kb.keys[key].keycodes[layer].fields[1].id +")");
+						var shortCode = keycode
+							.replace(/^LT\(/, "LT")
+							.replace(/, KC_([A-Z0-9_]+)\)/, "_$1")
+							;
+						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
+						var append = shortCode;
+						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+
+						break;
+					case "LM()":
+						var n = kb.keys[key].keycodes[layer].fields[0]; // Target Layer
+						var mod = kb.keys[key].keycodes[layer].fields[1]; // Mod Mask
+						var bitflags = "0".repeat( 6 - (mod).toString(2).length ) + (mod).toString(2);
+						var suffix = "";
+						var mods = [];
+						if ( bitflags.substr(5, 1) == 1 ) { mods.push( "MOD_LCTL" ); suffix += "C"   ; }
+						if ( bitflags.substr(4, 1) == 1 ) { mods.push( "MOD_LSFT" ); suffix += "S"   ; }
+						if ( bitflags.substr(3, 1) == 1 ) { mods.push( "MOD_LALT" ); suffix += "A"   ; }
+						if ( bitflags.substr(2, 1) == 1 ) { mods.push( "MOD_LGUI" ); suffix += "G"   ; }
+						if ( bitflags.substr(0, 1) == 1 ) { mods.push( "MOD_MEH"  ); suffix = "MEH"  ; }
+						if ( bitflags.substr(1, 1) == 1 ) { mods.push( "MOD_HYPR" ); suffix = "HYPR" ; }
+
+						var shortCode = "LM"+ n +"_"+ suffix;
+						var keycode = keycode.replace(/\(\)/, "("+ n + ", "+ mods.join(' | ') +")");
+
+						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
+						var append = shortCode;
+						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+
+						break;
+					case "MT()":
+						var n = kb.keys[key].keycodes[layer].fields[0]; // Mod Mask
+						var kc = kb.keys[key].keycodes[layer].fields[1].id; // Keycode
+						var bitflags = "0".repeat( 6 - (n).toString(2).length ) + (n).toString(2);
+						var prefix = "";
+						var mods = [];
+						if ( bitflags.substr(5, 1) == 1 ) { mods.push( "MOD_LCTL" ); prefix += "C"   ; }
+						if ( bitflags.substr(4, 1) == 1 ) { mods.push( "MOD_LSFT" ); prefix += "S"   ; }
+						if ( bitflags.substr(3, 1) == 1 ) { mods.push( "MOD_LALT" ); prefix += "A"   ; }
+						if ( bitflags.substr(2, 1) == 1 ) { mods.push( "MOD_LGUI" ); prefix += "G"   ; }
+						if ( bitflags.substr(0, 1) == 1 ) { mods.push( "MOD_MEH"  ); prefix = "MEH"  ; }
+						if ( bitflags.substr(1, 1) == 1 ) { mods.push( "MOD_HYPR" ); prefix = "HYPR" ; }
+
+						var shortCode = prefix +"_"+ kc.replace(/KC_/g, "");
+						var keycode = keycode.replace(/\(\)/, "("+ mods.join(' | ') +", "+ kc +")");
+
+						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
+						var append = shortCode;
+						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+
+						break;
 					case "LCTL()":
 					case "LSFT()":
 					case "LALT()":
@@ -250,7 +370,7 @@ document.getElementById('submit').addEventListener(
 					case "RALT()":
 					case "RGUI()":
 						var keycodeValue = kb.keys[key].keycodes[layer].fields[0].id;
-						//console.log( "keycodeValue: "+ keycodeValue );
+						console.log( "[NESTED MODS] keycodeValue: "+ keycodeValue );
 						if ( keycodeValue.match(/^[LR](CTL|SFT|ALT|GUI)/) != null ) {
 							var keycode = keycode.replace(/\(\)/, "("+ keycodeValue +")");
 
@@ -274,34 +394,43 @@ document.getElementById('submit').addEventListener(
 									}
 								}
 							}
-
 						}
-						//console.log( "POST: "+ keycode );
+						console.log( "[NESTED MODS] POST: "+ keycode );
+
+						console.log( keycode.length );
+						var shortCode = keycode
+							.replace(/[LR]CTL\(/g, "C" )
+							.replace(/[LR]SFT\(/g, "S" )
+							.replace(/[LR]ALT\(/g, "A" )
+							.replace(/[LR]GUI\(/g, "G" )
+							.replace(/KC_([A-Z0-9_]+)[\)]+/g, "_$1" )
+							//.replace(/([CSAG_]+)__/g, "$1".replace(/_/g, "") )
+							;
+						console.log( shortCode );
+						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
+						var append = shortCode;
+						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+
 						break;
 				}
-				if ( keycode.length > 7 ) {
-					console.log( keycode.length );
-					var shortCode = keycode
-						.replace(/[LR]CTL\(/g, "C" )
-						.replace(/[LR]SFT\(/g, "S" )
-						.replace(/[LR]ALT\(/g, "A" )
-						.replace(/[LR]GUI\(/g, "G" )
-						.replace(/KC_([A-Z0-9_]+)[\)]+/g, "_$1" )
-						//.replace(/([CSAG_]+)__/g, "$1".replace(/_/g, "") )
-						;
-					console.log( shortCode );
-					customKeycodes.push( "#define "+ shortCode +" ".repeat(8 - shortCode.length) + keycode );
-					layerData += shortCode +","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) );
+				if ( keycode.length <= 7 ) {
+					var append = keycode;
+					layerData += append /*+","+ " ".repeat( Math.max(0, (8 - keycode.length) ) )*/;
 				} else {
-					layerData += keycode +","+ " ".repeat( Math.max(0, (8 - keycode.length) ) );
+					//layerData += keycode /*+","+ " ".repeat( Math.max(0, (8 - keycode.length) ) )*/;
 				}
-				/*if ( key % cols == cols-1 ) {
-					if ( key < keys-2 ) {
+				if ( key < keys-1 ) {
+					layerData += ",";
+					layerData += " ".repeat( Math.max(0, (8 - append.length) ) );
+					if ( key % cols == cols-1 ) {
 						layerData += "\\\n    ";
 					} else {
-						layerData += "\\"
+						//layerData += "\\"
 					}
-				}*/
+				} else {
+					layerData += " ".repeat( Math.max(0, (9 - keycode.length) ) );
+					layerData += "\\" /*+ " ".repeat( Math.max(0, (9 - keycode.length) ) )*/;
+				}
 				matrix[matrixRow][matrixCol] = "K"+ base32hex.substr( obj.keyboard.keys[key].row , 1) + base32hex.substr( obj.keyboard.keys[key].col , 1) +"  ";
 			}
 			layerData += "\n  ),\n";
@@ -343,15 +472,23 @@ document.getElementById('submit').addEventListener(
 		var layoutString = ""; // physical layout
 		// Layout Data
 		for ( key=0; key<keys; key++ ) {
+			var w = obj.keyboard.keys[key].state.w;
+			var h = obj.keyboard.keys[key].state.h;
 			infojsonOutput.push(
 				[
 					"{\"label\":\""+ ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('') +"\"",
 					"\"x\":"+ obj.keyboard.keys[key].state.x,
-					"\"y\":"+ obj.keyboard.keys[key].state.y,
-					"\"w\":"+ obj.keyboard.keys[key].state.w,
-					"\"h\":"+ obj.keyboard.keys[key].state.h +"},"
+					"\"y\":"+ obj.keyboard.keys[key].state.y +"},"
 				].join(', ')
 			);
+
+			if ( w != 1 ) {
+			  infojsonOutput[infojsonOutput.length-1] = infojsonOutput[infojsonOutput.length-1].replace(/},$/g, ", \"w\":"+ w +"},");
+			}
+			if ( h != 1 ) {
+			  infojsonOutput[infojsonOutput.length-1] = infojsonOutput[infojsonOutput.length-1].replace(/},$/g, ", \"h\":"+ h +"},");
+			}
+
 			layoutString += ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('') +", ";
 			if ( ( key < (keys - 1) ) && ( obj.keyboard.keys[key].state.x > obj.keyboard.keys[key+1].state.x ) ) {
 				layoutString += "\\\n";
@@ -442,17 +579,27 @@ document.getElementById('submit').addEventListener(
 					);
 					break;
 				case "info.json":
+					var n = 0; // Track which line of text is about to be output
 					infojsonOutput.forEach(
 						function(line) {
-							//console.log( "typeof line: "+ typeof line );
 							if ( typeof line == "string" ) {
+								n++; // Line number
 								var insLine = document.createElement('code');
 								preElement.setAttribute('class', "language-json");
-								insLine.innerHTML = line.replace(/^{\"label/, " ".repeat(8) + "{\"label" ) +"\n";
+								// Only output a comma at the end of the line if there's another key object to add
+								//         ┌ Offset 10 because there are 10 lines before the actual layout data starts
+								//         │             ┌ 10+keys because that's the last line that should have a comma
+								//         ↓             ↓
+								if ( ( n > 10 ) && ( n < 10+keys ) ) {
+									insLine.innerHTML = line.replace(/^{\"label/, " ".repeat(8) + "{\"label" ).replace(/\},/g, "},") +"\n";
+								} else {
+									insLine.innerHTML = line.replace(/^{\"label/, " ".repeat(8) + "{\"label" ).replace(/\},/g, "}") +"\n";
+								}
 								preElement.appendChild( insLine );
 							}
 						}
 					);
+					Prism.highlightElement(preElement);
 					break;
 			}
 			var lastLine = document.createElement('code');
@@ -460,6 +607,7 @@ document.getElementById('submit').addEventListener(
 			preElement.appendChild( lastLine );
 			// Rerun Prism syntax highlighting on the element
 			Prism.highlightElement(preElement);
+			selectElementText(document.getElementById("editor"));
 		};
 
 		output("config.h");

@@ -12,7 +12,7 @@ body {
 	padding: 8px;
 	border: 0px solid #000;
 	/*border-width: 0 1px 1px;*/
-	margin: 8px auto 0;
+	margin: 8px auto 80px;
 	box-shadow: 0 0 4px #000;
 }
 
@@ -114,8 +114,8 @@ textarea {
 
 
 pre#editor {
+	background-color: #f5f2f0;
 	/*
-	background-color: hsl(200, 100%, 96%);
 	color: #336680;
 	color: #3399cc;
 	color: #07354c;

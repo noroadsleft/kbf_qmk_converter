@@ -357,6 +357,7 @@ document.getElementById('submit').addEventListener(
 		for ( layer=0; layer<=15; layer++ ) {
 			//console.log( "Processing Layer "+ layer +"..." );
 			var layerData = "  ["+ layer +"] = LAYOUT( \\\n    ";
+			var transCodes = 0;
 			for ( key=0; key<keys; key++ ) {
 				var matrixRow = obj.keyboard.keys[key].row
 				var matrixCol = obj.keyboard.keys[key].col;
@@ -478,6 +479,7 @@ document.getElementById('submit').addEventListener(
 				if ( keycode.length <= 7 ) {
 					var append = keycode;
 					layerData += append /*+","+ " ".repeat( Math.max(0, (8 - keycode.length) ) )*/;
+					if ( keycode == "KC_TRNS" ) { transCodes++; }
 				} else {
 					//layerData += keycode /*+","+ " ".repeat( Math.max(0, (8 - keycode.length) ) )*/;
 				}
@@ -496,7 +498,10 @@ document.getElementById('submit').addEventListener(
 				matrix[matrixRow][matrixCol] = "K"+ base32hex.substr( obj.keyboard.keys[key].row , 1) + base32hex.substr( obj.keyboard.keys[key].col , 1) +"  ";
 			}
 			layerData += "\n  ),\n";
-			keymapData += layerData;
+			// Only output the layer if non-KC_TRNS keycodes are present (blank layers are suppressed).
+			if ( transCodes != keys ) {
+				keymapData += layerData;
+			}
 		}
 
 		keymapOutput.push(

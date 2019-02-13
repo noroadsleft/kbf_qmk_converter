@@ -109,6 +109,21 @@ document.getElementById('submit').addEventListener(
 		}
 		//console.log( matrix );
 		var layoutMacroOutput = [
+			"/* Copyright 2019 REPLACE_WITH_YOUR_NAME",
+			" *",
+			" * This program is free software: you can redistribute it and/or modify",
+			" * it under the terms of the GNU General Public License as published by",
+			" * the Free Software Foundation, either version 2 of the License, or",
+			" * (at your option) any later version.",
+			" *",
+			" * This program is distributed in the hope that it will be useful,",
+			" * but WITHOUT ANY WARRANTY; without even the implied warranty of",
+			" * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the",
+			" * GNU General Public License for more details.",
+			" *",
+			" * You should have received a copy of the GNU General Public License",
+			" * along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.",
+			" */",
 			"#pragma once",
 			"",
 			"#include \"quantum.h\"",
@@ -228,6 +243,23 @@ document.getElementById('submit').addEventListener(
 		** config.h **
 		*************/
 		var configOutput = [
+			"/*",
+			"Copyright 2019 REPLACE_WITH_YOUR_NAME",
+			"",
+			"This program is free software: you can redistribute it and/or modify",
+			"it under the terms of the GNU General Public License as published by",
+			"the Free Software Foundation, either version 2 of the License, or",
+			"(at your option) any later version.",
+			"",
+			"This program is distributed in the hope that it will be useful,",
+			"but WITHOUT ANY WARRANTY; without even the implied warranty of",
+			"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the",
+			"GNU General Public License for more details.",
+			"",
+			"You should have received a copy of the GNU General Public License",
+			"along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.",
+			"*/",
+			"",
 			"#pragma once",
 			"",
 			"#include \"config_common.h\"",
@@ -303,6 +335,21 @@ document.getElementById('submit').addEventListener(
 		var customKeycodes = [];
 		var keymapData = "";
 		var keymapOutput = [
+			"/* Copyright 2019 REPLACE_WITH_YOUR_NAME",
+			" *",
+			" * This program is free software: you can redistribute it and/or modify",
+			" * it under the terms of the GNU General Public License as published by",
+			" * the Free Software Foundation, either version 2 of the License, or",
+			" * (at your option) any later version.",
+			" *",
+			" * This program is distributed in the hope that it will be useful,",
+			" * but WITHOUT ANY WARRANTY; without even the implied warranty of",
+			" * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the",
+			" * GNU General Public License for more details.",
+			" *",
+			" * You should have received a copy of the GNU General Public License",
+			" * along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.",
+			" */",
 			"#include QMK_KEYBOARD_H",
 			"",
 		];
@@ -526,7 +573,7 @@ document.getElementById('submit').addEventListener(
 		}
 		for ( i = rows-1; i >= 0; i-- ) {
 			// inserts at 5th index position
-			layoutMacroOutput.splice(6, 0, "  {   "+ matrix[i].join(', ').replace(/( +),/g, ",$1") +" }, \\" );
+			layoutMacroOutput.splice(21, 0, "  {   "+ matrix[i].join(', ').replace(/( +),/g, ",$1") +" }, \\" );
 		}
 		/*
 		for ( i = rows-1; i >= 0; i-- ) {
@@ -544,9 +591,9 @@ document.getElementById('submit').addEventListener(
 		for ( i = layoutString.length-1; i>=0; i-- ) {
 			if ( i == layoutString.length-1 ) {
 				//console.log( layoutString[i] );
-				layoutMacroOutput.splice(5, 0, "  "+ layoutString[i].replace(/, $/, "") +"  \\" );
+				layoutMacroOutput.splice(20, 0, "  "+ layoutString[i].replace(/, $/, "") +"  \\" );
 			} else {
-				layoutMacroOutput.splice(5, 0, "  "+ layoutString[i] +"" );
+				layoutMacroOutput.splice(20, 0, "  "+ layoutString[i] +"" );
 			}
 		}
 

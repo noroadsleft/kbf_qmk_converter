@@ -71,7 +71,7 @@ div.inset {
 	display: none;
 	padding: 8px 0;
 }
-.panel2 button, .panel1 button {
+.panel2 button, .panel3 button {
 	font-size: large;
 	padding: 0 16px;
 }
@@ -147,6 +147,7 @@ pre#editor code:nth-child(even) {
 
 
 #footer {
+	display: none;
 	background-color: #ffebeb;
 	color: #803333;
 	position: fixed;

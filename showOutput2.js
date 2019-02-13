@@ -68,6 +68,21 @@ document.getElementById("c_info").addEventListener(
 );
 
 
+document.getElementById('copy').addEventListener(
+	"click",
+	function() {
+		document.execCommand('copy');
+		var filename = document.getElementsByClassName('selected')[0].innerHTML.replace(/&[lg]t;/g, "");
+		var footer = document.getElementById('footer');
+		var notice = document.createElement('p');
+		notice.appendChild( document.createTextNode(filename +' contents copied to clipboard.') );
+		footer.innerHTML = "";
+		footer.appendChild(notice);
+		footer.setAttribute('style', "display: block;");
+	}
+);
+
+
 document.getElementById('submit').addEventListener(
 	"click",
 	function() {

@@ -538,6 +538,7 @@ document.getElementById('submit').addEventListener(
 								}
 							}
 						}
+						keycode = keycode.replace(/\(\)/g, "("+ keycodeValue +")");
 						console.log( "[NESTED MODS] POST: "+ keycode );
 
 						console.log( keycode.length );

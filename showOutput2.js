@@ -624,7 +624,13 @@ document.getElementById('submit').addEventListener(
 			var h = obj.keyboard.keys[key].state.h;
 			infojsonOutput.push(
 				[
-					"{\"label\":\""+ ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('') +"\"",
+					"{\"label\":\""+ [
+						"K",
+						base32hex.substr(obj.keyboard.keys[key].row, 1),
+						base32hex.substr(obj.keyboard.keys[key].col, 1)
+					].join('') +
+					" (" + obj.keyboard.pins.row[obj.keyboard.keys[key].row] +"," + obj.keyboard.pins.col[obj.keyboard.keys[key].col] +")"+
+					"\"",
 					"\"x\":"+ obj.keyboard.keys[key].state.x,
 					"\"y\":"+ obj.keyboard.keys[key].state.y +"},"
 				].join(', ')

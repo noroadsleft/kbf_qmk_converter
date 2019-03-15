@@ -121,8 +121,8 @@ pre#editor {
 	color: #07354c;
 	*/
 	font-size: 10pt;
-	min-height: 300px;
-	max-height: 640px;
+	min-height: 200px;
+	max-height: calc(1.5 * 25em);
 	padding: 8px;
 	border: 2px inset #336680;;
 	border-radius: 4px;

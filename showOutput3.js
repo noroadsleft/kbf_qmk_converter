@@ -949,7 +949,7 @@ document.getElementById('submit').addEventListener(
 								//         ┌ Offset 10 because there are 10 lines before the actual layout data starts
 								//         │             ┌ 10+keys because that's the last line that should have a comma
 								//         ↓             ↓
-								if ( ( n > 10 ) && ( n < 10+keys ) ) {
+								if ( ( n > 10 ) && ( n < 10+keyCount ) ) {
 									insLine.innerHTML = line.replace(/^{\"label/, " ".repeat(16) + "{\"label" ).replace(/\},/g, "},") +"\n";
 								} else /* if ( n == 10+keys ) */ {
 									insLine.innerHTML = line.replace(/^{\"label/, " ".repeat(16) + "{\"label" ).replace(/(\{\"label.*\}),/g, "$1") +"\n";

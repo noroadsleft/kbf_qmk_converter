@@ -8,7 +8,8 @@ html {
 body {
 	background-color: #fff;
 	font-family: 'Open Sans', sans-serif;
-	width: 1300px;
+	min-width: 900px;
+	max-width: 1300px;
 	padding: 8px;
 	border: 0px solid #000;
 	/*border-width: 0 1px 1px;*/

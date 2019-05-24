@@ -496,11 +496,11 @@ document.getElementById('submit').addEventListener(
 					" ".repeat( layerData_rowOffset - 1 ) + "\\"
 				;
 			}
-			console.log(
+			/*console.log(
 				"layerData2.length: " + layerData2.length + "\n" +
 				"=".repeat( layerData_rowOffset ) +"\n" +
 				layerData2
-			);
+			);*/
 			var transCodes = 0;
 			for ( key=0; key<keys; key++ ) {
 				var matrixRow = obj.keyboard.keys[key].row
@@ -523,7 +523,7 @@ document.getElementById('submit').addEventListener(
 							;
 						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
 						var append = shortCode;
-						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+						layerData2 += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
 
 						break;
 					case "LM()":
@@ -544,7 +544,7 @@ document.getElementById('submit').addEventListener(
 
 						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
 						var append = shortCode;
-						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+						layerData2 += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
 
 						break;
 					case "MT()":
@@ -565,7 +565,7 @@ document.getElementById('submit').addEventListener(
 
 						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
 						var append = shortCode;
-						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+						layerData2 += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
 
 						break;
 					case "LCTL()":
@@ -617,7 +617,7 @@ document.getElementById('submit').addEventListener(
 						console.log( shortCode );
 						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
 						var append = shortCode;
-						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+						layerData2 += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
 
 						break;
 				}
@@ -633,10 +633,10 @@ document.getElementById('submit').addEventListener(
 							append + "," + " ".repeat( 9 - append.length - 1 )
 						)
 					;
-					console.log(
+					/*console.log(
 						layerData2.length +"\n"+ "=".repeat(20) +"\n"+
 						layerData2
-					);
+					);*/
 					//layerData += append /*+","+ " ".repeat( Math.max(0, (8 - keycode.length) ) )*/;
 					if ( keycode == "KC_TRNS" ) { transCodes++; }
 				} else {
@@ -804,7 +804,7 @@ document.getElementById('submit').addEventListener(
 							;
 						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
 						var append = shortCode;
-						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+						layerData2 += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
 
 						break;
 					case "LM()":
@@ -825,7 +825,7 @@ document.getElementById('submit').addEventListener(
 
 						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
 						var append = shortCode;
-						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+						layerData2 += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
 
 						break;
 					case "MT()":
@@ -846,7 +846,7 @@ document.getElementById('submit').addEventListener(
 
 						customKeycodes.push( "#define "+ shortCode +" ".repeat(12 - shortCode.length) + keycode );
 						var append = shortCode;
-						layerData += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
+						layerData2 += append /*+","+ " ".repeat( Math.max(0, (8 - shortCode.length) ) )*/;
 
 						break;
 					case "LCTL()":

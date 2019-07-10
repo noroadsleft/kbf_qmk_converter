@@ -211,25 +211,25 @@ document.getElementById('submit').addEventListener(
 
 		if ( obj.keyboard.pins.led ) {
 			configOutput.push(
-				"// #define BACKLIGHT_PIN " + obj.keyboard.pins.led,
+				"#define BACKLIGHT_PIN " + obj.keyboard.pins.led,
 				"// #define BACKLIGHT_BREATHING",
-				"// #define BACKLIGHT_LEVELS " + obj.keyboard.settings.backlightLevels,
+				"#define BACKLIGHT_LEVELS " + obj.keyboard.settings.backlightLevels,
 				""
 			);
 		}
 
 		if ( obj.keyboard.pins.rgb ) {
 			configOutput.push(
-				"// #define RGB_DI_PIN " + obj.keyboard.pins.rgb + "",
-				"// #ifdef RGB_DI_PIN",
-				"//     #define RGBLED_NUM 16",
-				"//     #define RGBLIGHT_HUE_STEP 8",
-				"//     #define RGBLIGHT_SAT_STEP 8",
-				"//     #define RGBLIGHT_VAL_STEP 8",
-				"//     #define RGBLIGHT_LIMIT_VAL 255 /* The maximum brightness level */",
-				"//     #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */",
-				"// /*== all animations enable ==*/",
-				"//     #define RGBLIGHT_ANIMATIONS",
+				"#define RGB_DI_PIN " + obj.keyboard.pins.rgb + "",
+				"#ifdef RGB_DI_PIN",
+				"    #define RGBLED_NUM 16",
+				"    #define RGBLIGHT_HUE_STEP 8",
+				"    #define RGBLIGHT_SAT_STEP 8",
+				"    #define RGBLIGHT_VAL_STEP 8",
+				"    #define RGBLIGHT_LIMIT_VAL 255 /* The maximum brightness level */",
+				"    #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */",
+				"/*== all animations enable ==*/",
+				"    #define RGBLIGHT_ANIMATIONS",
 				"// /*== or choose animations ==*/",
 				"//     #define RGBLIGHT_EFFECT_BREATHING",
 				"//     #define RGBLIGHT_EFFECT_RAINBOW_MOOD",
@@ -240,7 +240,7 @@ document.getElementById('submit').addEventListener(
 				"//     #define RGBLIGHT_EFFECT_STATIC_GRADIENT",
 				"//     #define RGBLIGHT_EFFECT_RGB_TEST",
 				"//     #define RGBLIGHT_EFFECT_ALTERNATING",
-				"// #endif"
+				"#endif"
 			);
 		}
 		configOutput.push(

@@ -222,7 +222,7 @@ document.getElementById('submit').addEventListener(
 			configOutput.push(
 				"#define RGB_DI_PIN " + obj.keyboard.pins.rgb + "",
 				"#ifdef RGB_DI_PIN",
-				"    #define RGBLED_NUM 16",
+				"    #define RGBLED_NUM " + obj.keyboard.settings.rgbNum,
 				"    #define RGBLIGHT_HUE_STEP 8",
 				"    #define RGBLIGHT_SAT_STEP 8",
 				"    #define RGBLIGHT_VAL_STEP 8",

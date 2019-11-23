@@ -656,7 +656,7 @@ document.getElementById('submit').addEventListener(
 						append = "XXXXXXX";
 					} //else if ( keycode.substr( ) )
 					//var append = keycode;
-					console.log( "adding keycode: "+ append + " | layerData2.length: "+ layerData2.length );
+					//console.log( "adding keycode: "+ append + " | layerData2.length: "+ layerData2.length );
 					layerData2_start = ( layerData_rowOffset * Math.floor( obj.keyboard.keys[key].state.y ) ) + ( obj.keyboard.keys[key].state.x * 9 );
 					if ( kb.keys[key].state.w > 5.75 ) {
 						layerData2_start += Math.floor( Math.round( kb.keys[key].state.w * 9 ) / 2 ) - ( append.length + 2 );

@@ -259,56 +259,21 @@ document.getElementById('submit').addEventListener(
 			F_USB = $(F_CPU)
 			OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT
 		*/
-		var mcuConfig = [];
-		switch ( obj.keyboard.controller ) {
-			case 0:
-				mcuConfig.push( "atmega32u2" );
-				break;
-			case 1:
-				mcuConfig.push( "atmega32u4" );
-				break;
-			case 2:
-				mcuConfig.push( "at90usb1286" );
-				break;
-		}
-		switch ( mcuConfig[0] ) {
-			case "atmega32u2":
-			case "atmega32u4":
-			case "at90usb1286":
-				mcuConfig.push(
-					16000000,
-					"AVR8"
-				);
-				break;
-		}
+		var Controllers = ["atmega32u2", "atmega32u4", "at90usb1286"];
+		var MicroController = Controllers[obj.keyboard.controller];
 		var rulesOutput = [
-			"MCU = "+ mcuConfig[0],
-			"F_CPU = "+ mcuConfig[1],
-			"ARCH = "+ mcuConfig[2],
-			"F_USB = $(F_CPU)",
-			"OPT_DEFS += -DINTERRUPT_CONTROL_ENDPOINT"
-		];
-		rulesOutput.push( "", "" );
-		rulesOutput.push(
+			"# MCU name",
+			"MCU = "+ MicroController,
+			"",
 			"# Bootloader selection",
 			"#   Teensy       halfkay",
 			"#   Pro Micro    caterina",
 			"#   Atmel DFU    atmel-dfu",
 			"#   LUFA DFU     lufa-dfu",
 			"#   QMK DFU      qmk-dfu",
-			"#   atmega32a    bootloadHID",
+			"#   ATmega32A    bootloadHID",
+			"#   ATmega328P   USBasp",
 			"BOOTLOADER = atmel-dfu",
-			"",
-			"",
-			"# If you don't know the bootloader type, then you can specify the",
-			"# Boot Section Size in *bytes* by uncommenting out the OPT_DEFS line",
-			"#   Teensy halfKay      512",
-			"#   Teensy++ halfKay    1024",
-			"#   Atmel DFU loader    4096",
-			"#   LUFA bootloader     4096",
-			"#   USBaspLoader        2048",
-			"# OPT_DEFS += -DBOOTLOADER_SIZE=4096",
-			"",
 			"",
 			"# Build Options",
 			"#   change yes to no to disable",
@@ -322,7 +287,7 @@ document.getElementById('submit').addEventListener(
 			"SLEEP_LED_ENABLE = no        # Breathing sleep LED during USB suspend",
 			"# if this doesn't work, see here: https://github.com/tmk/tmk_keyboard/wiki/FAQ#nkro-doesnt-work",
 			"NKRO_ENABLE = no             # USB Nkey Rollover"
-		);
+		];
 		rulesOutput.push( [ "BACKLIGHT_ENABLE = ", ( ( obj.keyboard.pins.led != null ) ? "yes" : "no " ), "       # Enable keyboard backlight functionality"].join('') );
 		rulesOutput.push( [ "RGBLIGHT_ENABLE = ", ( ( obj.keyboard.pins.rgb != null ) ? "yes" : "no " ), "        # Enable keyboard RGB underglow"].join('') );
 		rulesOutput.push(

@@ -571,6 +571,27 @@ document.getElementById('submit').addEventListener(
 						customKeycodes.push( "#define "+ append +" ".repeat(12 - append.length) + shortCode );
 						break;
 
+					case "CTL_T()":
+					case "SFT_T()":
+					case "ALT_T()":
+					case "GUI_T()":
+					case "LCTL_T()":
+					case "LSFT_T()":
+					case "LALT_T()":
+					case "LGUI_T()":
+					case "RCTL_T()":
+					case "RSFT_T()":
+					case "RALT_T()":
+					case "RGUI_T()":
+						var mt_kc = kb.keys[key].keycodes[layer].fields[0].id; // Internal Keycode
+						if ( keycode.length == 7 ) {
+							keycode = "L"+ keycode;
+						}
+						var shortCode = keycode.replace(/\(\)/, "("+ mt_kc +")");
+						var append = keycode.substring(1, 4) + "_" + mt_kc.replace(/KC_/g, "").substring(0, 3);
+						customKeycodes.push( "#define "+ append +" ".repeat(12 - append.length) + shortCode );
+						break;
+
 					case "LCTL()":
 					case "LSFT()":
 					case "LALT()":

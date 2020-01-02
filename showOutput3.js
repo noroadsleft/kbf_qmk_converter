@@ -1,5 +1,7 @@
 console.log( "Running showOutput3.js..." );
 
+const year = new Date().getFullYear();
+
 /***************************************
 ** https://stackoverflow.com/a/987376 **
 ***************************************/
@@ -160,7 +162,7 @@ document.getElementById('submit').addEventListener(
 
 		var configOutput = [
 			"/*",
-			"Copyright 2019 REPLACE_WITH_YOUR_NAME",
+			"Copyright "+ year +" REPLACE_WITH_YOUR_NAME",
 			"",
 			"This program is free software: you can redistribute it and/or modify",
 			"it under the terms of the GNU General Public License as published by",
@@ -318,7 +320,7 @@ document.getElementById('submit').addEventListener(
 		}
 		//console.log( matrix );
 		var keyboardCOutput = [
-			"/* Copyright 2019 REPLACE_WITH_YOUR_NAME",
+			"/* Copyright "+ year +" REPLACE_WITH_YOUR_NAME",
 			" *",
 			" * This program is free software: you can redistribute it and/or modify",
 			" * it under the terms of the GNU General Public License as published by",
@@ -382,7 +384,7 @@ document.getElementById('submit').addEventListener(
 		}
 		//console.log( matrix );
 		var layoutMacroOutput = [
-			"/* Copyright 2019 REPLACE_WITH_YOUR_NAME",
+			"/* Copyright "+ year +" REPLACE_WITH_YOUR_NAME",
 			" *",
 			" * This program is free software: you can redistribute it and/or modify",
 			" * it under the terms of the GNU General Public License as published by",
@@ -422,7 +424,7 @@ document.getElementById('submit').addEventListener(
 
 		// File header
 		var keymapOutput = [
-			"/* Copyright 2019 REPLACE_WITH_YOUR_NAME",
+			"/* Copyright "+ year +" REPLACE_WITH_YOUR_NAME",
 			" *",
 			" * This program is free software: you can redistribute it and/or modify",
 			" * it under the terms of the GNU General Public License as published by",

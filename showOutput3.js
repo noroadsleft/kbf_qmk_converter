@@ -220,6 +220,12 @@ document.getElementById('submit').addEventListener(
 			);
 		}
 
+		if ( obj.keyboard.settings.rgbVol != null ) {
+			var rgbValMax = obj.keyboard.settings.rgbVol;
+		} else if ( obj.keyboard.settings.rgbLimit != null ) {
+			var rgbValMax = obj.keyboard.settings.rgbLimit;
+		}
+
 		if ( obj.keyboard.pins.rgb ) {
 			configOutput.push(
 				"#define RGB_DI_PIN " + obj.keyboard.pins.rgb + "",
@@ -228,7 +234,7 @@ document.getElementById('submit').addEventListener(
 				"    #define RGBLIGHT_HUE_STEP 8",
 				"    #define RGBLIGHT_SAT_STEP 8",
 				"    #define RGBLIGHT_VAL_STEP 8",
-				"    #define RGBLIGHT_LIMIT_VAL 255 /* The maximum brightness level */",
+				"    #define RGBLIGHT_LIMIT_VAL "+ rgbValMax +" /* The maximum brightness level */",
 				"    #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */",
 				"/*== all animations enable ==*/",
 				"    #define RGBLIGHT_ANIMATIONS",
@@ -263,43 +269,141 @@ document.getElementById('submit').addEventListener(
 		*/
 		var Controllers = ["atmega32u2", "atmega32u4", "at90usb1286"];
 		var MicroController = Controllers[obj.keyboard.controller];
+
+		/* BOOTMAGIC_ENABLE */
+		if ( obj.keyboard.settings.chooseBootMagic != null ) {
+			// QMKeyboard.cn export
+			switch ( obj.keyboard.settings.chooseBootMagic ) {
+				case 0:
+					var BootmagicEnable = "yes ";
+					break;
+				case 1:
+					var BootmagicEnable = "no  ";
+					break;
+				case 2:
+					var BootmagicEnable = "lite";
+					break;
+			}
+		}
+		else if ( obj.keyboard.settings.bootMagic != null ) {
+			// mtkeyboard.vip export
+			switch ( obj.keyboard.settings.bootMagic ) {
+				case 0:
+					var BootmagicEnable = "no  ";
+					break;
+				case 1:
+					var BootmagicEnable = "lite";
+					break;
+				case 2:
+					var BootmagicEnable = "yes ";
+					break;
+			}
+		}
+		else {
+			var BootmagicEnable = "lite";
+		}
+
+		/* MOUSEKEY_ENABLE */
+		if ( obj.keyboard.settings.chooseMousekey != null ) {
+			// QMKeyboard.cn export
+			switch ( obj.keyboard.settings.chooseMousekey ) {
+				case 0:
+					var MousekeyEnable = "yes";
+					break;
+				case 1:
+					var MousekeyEnable = "no ";
+					break;
+			}
+		}
+		else if ( obj.keyboard.settings.mouseKey != null ) {
+			// mtkeyboard.vip export
+			switch ( obj.keyboard.settings.mouseKey ) {
+				case 0:
+					var MousekeyEnable = "no ";
+					break;
+				case 1:
+					var MousekeyEnable = "yes";
+					break;
+			}
+		}
+		else {
+			var MousekeyEnable = "yes";
+		}
+
+		/* EXTRAKEY_ENABLE */
+		if ( obj.keyboard.settings.chooseExtrakey != null ) {
+			switch ( obj.keyboard.settings.chooseExtrakey ) {
+				case 0:
+					var ExtrakeyEnable = "yes";
+					break;
+				case 1:
+					var ExtrakeyEnable = "no ";
+					break;
+			}
+		}
+		else {
+			var ExtrakeyEnable = "yes";
+		}
+
+		/* KEY_LOCK_ENABLE */
+		if ( obj.keyboard.settings.choosekeylock != null ) {
+			// QMKeyboard.cn export
+			switch ( obj.keyboard.settings.choosekeylock ) {
+				case 0:
+					var KeyLockEnable = "yes";
+					break;
+				case 1:
+					var KeyLockEnable = "no ";
+					break;
+			}
+		}
+		else if ( obj.keyboard.settings.keyLock != null ) {
+			// mtkeyboard.vip export
+			switch ( obj.keyboard.settings.keyLock ) {
+				case 0:
+					var KeyLockEnable = "no ";
+					break;
+				case 1:
+					var KeyLockEnable = "yes";
+					break;
+			}
+		}
+
 		var rulesOutput = [
 			"# MCU name",
 			"MCU = "+ MicroController,
 			"",
 			"# Bootloader selection",
-			"#   Teensy       halfkay",
-			"#   Pro Micro    caterina",
-			"#   Atmel DFU    atmel-dfu",
-			"#   LUFA DFU     lufa-dfu",
-			"#   QMK DFU      qmk-dfu",
-			"#   ATmega32A    bootloadHID",
-			"#   ATmega328P   USBasp",
 			"BOOTLOADER = atmel-dfu",
 			"",
 			"# Build Options",
 			"#   change yes to no to disable",
 			"#",
-			"BOOTMAGIC_ENABLE = lite      # Virtual DIP switch configuration",
-			"MOUSEKEY_ENABLE = yes        # Mouse keys",
-			"EXTRAKEY_ENABLE = yes        # Audio control and System control",
-			"CONSOLE_ENABLE = yes         # Console for debug",
-			"COMMAND_ENABLE = yes         # Commands for debug and configuration",
+			"BOOTMAGIC_ENABLE = "+ BootmagicEnable +"     # Virtual DIP switch configuration",
+			"MOUSEKEY_ENABLE = "+ MousekeyEnable +"       # Mouse keys",
+			"EXTRAKEY_ENABLE = "+ ExtrakeyEnable +"       # Audio control and System control",
+			"CONSOLE_ENABLE = yes        # Console for debug",
+			"COMMAND_ENABLE = yes        # Commands for debug and configuration",
 			"# Do not enable SLEEP_LED_ENABLE. it uses the same timer as BACKLIGHT_ENABLE",
-			"SLEEP_LED_ENABLE = no        # Breathing sleep LED during USB suspend",
+			"SLEEP_LED_ENABLE = no       # Breathing sleep LED during USB suspend",
 			"# if this doesn't work, see here: https://github.com/tmk/tmk_keyboard/wiki/FAQ#nkro-doesnt-work",
-			"NKRO_ENABLE = no             # USB Nkey Rollover"
+			"NKRO_ENABLE = no            # USB Nkey Rollover"
 		];
-		rulesOutput.push( [ "BACKLIGHT_ENABLE = ", ( ( obj.keyboard.pins.led != null ) ? "yes" : "no " ), "       # Enable keyboard backlight functionality"].join('') );
-		rulesOutput.push( [ "RGBLIGHT_ENABLE = ", ( ( obj.keyboard.pins.rgb != null ) ? "yes" : "no " ), "        # Enable keyboard RGB underglow"].join('') );
+		rulesOutput.push( [ "BACKLIGHT_ENABLE = ", ( ( obj.keyboard.pins.led != null ) ? "yes" : "no " ), "      # Enable keyboard backlight functionality"].join('') );
+		rulesOutput.push( [ "RGBLIGHT_ENABLE = ", ( ( obj.keyboard.pins.rgb != null ) ? "yes" : "no " ), "       # Enable keyboard RGB underglow"].join('') );
 		rulesOutput.push(
-			"MIDI_ENABLE = no             # MIDI support",
-			"UNICODE_ENABLE = no          # Unicode",
-			"BLUETOOTH_ENABLE = no        # Enable Bluetooth with the Adafruit EZ-Key HID",
-			"AUDIO_ENABLE = no            # Audio output on port C6",
-			"FAUXCLICKY_ENABLE = no       # Use buzzer to emulate clicky switches",
-			"HD44780_ENABLE = no          # Enable support for HD44780 based LCDs"
+			"MIDI_ENABLE = no            # MIDI support",
+			"UNICODE_ENABLE = no         # Unicode",
+			"BLUETOOTH_ENABLE = no       # Enable Bluetooth with the Adafruit EZ-Key HID",
+			"AUDIO_ENABLE = no           # Audio output on port C6",
+			"FAUXCLICKY_ENABLE = no      # Use buzzer to emulate clicky switches"
 		);
+		if ( KeyLockEnable ) {
+			rulesOutput.push(
+				"",
+				"KEY_LOCK_ENABLE = "+ KeyLockEnable +"	   # Enable KC_LOCK support"
+			);
+		}
 		rulesOutput.push(
 			"",
 			"# generated by KBFirmware JSON to QMK Parser",

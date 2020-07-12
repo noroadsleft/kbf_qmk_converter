@@ -6,9 +6,6 @@
 <link rel="stylesheet" href="./style-vue.css" type="text/css">
 <link href="./themes/prism.css" rel="stylesheet" />
 
-<!-- production version, optimized for size and speed -->
-<script src="https://cdn.jsdelivr.net/npm/vue"></script>
-
 <title>KBFirmware JSON to QMK Parser</title>
 </head>
 
@@ -16,8 +13,9 @@
 
 
 <div id="header">
-	<h1 id="title">{{ title }}</h1>
-	<h2 id="subtitle">{{ subtitle }}</h2>
+	<h1 id="title">KBFirmware JSON to QMK Parser</h1>
+	<h2 id="subtitle">Convert KBFirmware-format JSON files to usable QMK Data</h2>
+	<p id="comment">Supports JSON exports from kbfirmware.com, qmkeyboard.cn, and mtkeyboard.vip. Have a problems or request? Please <a href="https://github.com/noroadsleft/kbf_qmk_converter/issues/new" target="_blank">file an issue on GitHub.</a></p>
 </div>
 
 <hr />
@@ -48,11 +46,10 @@
 </div>
 
 <div id="footer">
+Authored by <a href="https://github.com/noroadsleft" target="_blank">@noroadsleft</a>
 </div>
 
 
-
-<script src="./app.js"></script>
 
 <script type="text/javascript" src="readSingleFile.js"></script>
 

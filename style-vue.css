@@ -17,7 +17,7 @@ body {
 	box-shadow: 0 0 4px #000;
 }
 
-h1, h2 { margin: 0; }
+h1, h2, p#comment { margin: 0; }
 
 .panel1 {
 	padding: 8px 0;
@@ -148,16 +148,12 @@ pre#editor code:nth-child(even) {
 
 
 #footer {
-	display: none;
-	background-color: #ffebeb;
-	color: #803333;
-	position: fixed;
-	left: 0;
-	bottom: 0;
-	width: 100%;
+	font-size: 14px;
 	text-align: center;
-	padding: 16px;
-	border-top: 2px solid #803333;
+	padding: 8px;
+}
+#footer a {
+	text-decoration: none;
 }
 #footer  p {
 	margin: 0;

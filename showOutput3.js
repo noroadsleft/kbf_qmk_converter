@@ -560,9 +560,9 @@ document.getElementById('submit').addEventListener(
 				;
 			}
 			var transCodes = 0;
-			
+
 			/*
-			 * append is the code that will actually go in the layer 
+			 * append is the code that will actually go in the layer
 			 */
 			for ( key=0; key<keyCount; key++ ) {
 				var matrixRow = obj.keyboard.keys[key].row;

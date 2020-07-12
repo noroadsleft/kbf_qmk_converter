@@ -147,14 +147,27 @@ pre#editor code:nth-child(even) {
 
 
 
-#footer {
+#footer, #status {
 	font-size: 14px;
-	text-align: center;
-	padding: 8px;
+	width: 45%;
+}
+#footer {
+	float: left;
+	padding: 8px 8px 0 0;
 }
 #footer a {
 	text-decoration: none;
 }
 #footer  p {
 	margin: 0;
+}
+#status {
+	display: none;
+	float: right;
+	text-align: right;
+	font-weight: 700;
+	padding: 8px 0 0 8px;
+}
+.clear {
+	clear: both;
 }

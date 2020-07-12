@@ -89,12 +89,11 @@ document.getElementById('copy').addEventListener(
 	function() {
 		document.execCommand('copy');
 		var filename = document.getElementsByClassName('selected')[0].innerHTML.replace(/&[lg]t;/g, "");
-		var footer = document.getElementById('footer');
-		var notice = document.createElement('p');
-		notice.appendChild( document.createTextNode(filename +' contents copied to clipboard.') );
-		footer.innerHTML = "";
-		footer.appendChild(notice);
-		footer.setAttribute('style', "display: block;");
+		var status = document.getElementById('status');
+		var notice = document.createTextNode(filename +' contents copied to clipboard.');
+		status.innerHTML = "";
+		status.appendChild(notice);
+		status.setAttribute('style', "display: block;");
 	}
 );
 

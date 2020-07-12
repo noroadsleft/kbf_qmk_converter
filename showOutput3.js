@@ -188,7 +188,7 @@ document.getElementById('submit').addEventListener(
 			"#define DEVICE_VER      0x0001",
 			"#define MANUFACTURER    [EDIT_THIS]",
 			"#define PRODUCT         [EDIT_THIS] " + obj.keyboard.settings.name + "",
-			"#define DESCRIPTION     [EDIT_THIS] A QMK-powered custom keyboard",
+			"#define DESCRIPTION     QMK Firmware: " + obj.keyboard.settings.name + "",
 			"",
 			"/* key matrix size */",
 			"#define MATRIX_ROWS " + matrix_rows,

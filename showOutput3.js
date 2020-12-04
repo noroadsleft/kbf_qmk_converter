@@ -274,7 +274,7 @@ document.getElementById('submit').addEventListener(
 			// QMKeyboard.cn export
 			switch ( obj.keyboard.settings.chooseBootMagic ) {
 				case 0:
-					var BootmagicEnable = "yes ";
+					var BootmagicEnable = "full";
 					break;
 				case 1:
 					var BootmagicEnable = "no  ";
@@ -294,7 +294,7 @@ document.getElementById('submit').addEventListener(
 					var BootmagicEnable = "lite";
 					break;
 				case 2:
-					var BootmagicEnable = "yes ";
+					var BootmagicEnable = "full";
 					break;
 			}
 		}
@@ -391,11 +391,8 @@ document.getElementById('submit').addEventListener(
 		rulesOutput.push( [ "BACKLIGHT_ENABLE = ", ( ( obj.keyboard.pins.led != null ) ? "yes" : "no " ), "      # Enable keyboard backlight functionality"].join('') );
 		rulesOutput.push( [ "RGBLIGHT_ENABLE = ", ( ( obj.keyboard.pins.rgb != null ) ? "yes" : "no " ), "       # Enable keyboard RGB underglow"].join('') );
 		rulesOutput.push(
-			"MIDI_ENABLE = no            # MIDI support",
-			"UNICODE_ENABLE = no         # Unicode",
-			"BLUETOOTH_ENABLE = no       # Enable Bluetooth with the Adafruit EZ-Key HID",
-			"AUDIO_ENABLE = no           # Audio output on port C6",
-			"FAUXCLICKY_ENABLE = no      # Use buzzer to emulate clicky switches"
+			"BLUETOOTH_ENABLE = no       # Enable Bluetooth",
+			"AUDIO_ENABLE = no           # Audio output",
 		);
 		if ( KeyLockEnable ) {
 			rulesOutput.push(

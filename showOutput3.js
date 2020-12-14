@@ -937,10 +937,10 @@ document.getElementById('submit').addEventListener(
 
         for ( i = matrix_rows-1; i >= 0; i-- ) {
             // inserts Electrical Switch Matrix at index 21 (22nd line)
-            layoutMacroOutput.splice(21, 0, "    { "+ matrix[i].join(', ').replace(/( +),/g, ",$1") +" }, \\" );
+            layoutMacroOutput.splice(22, 0, "    { "+ matrix[i].join(', ').replace(/( +),/g, ",$1") +" }, \\" );
         }
         // inserts Physical Switch Matrix at index 20
-        layoutMacroOutput.splice(20, 0, layoutMacro);
+        layoutMacroOutput.splice(21, 0, layoutMacro);
 
 
         /**********************************************

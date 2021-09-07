@@ -610,7 +610,7 @@ document.getElementById('submit').addEventListener(
             "# Build Options",
             "#   change yes to no to disable",
             "#",
-            "BOOTMAGIC_ENABLE = "+ BootmagicEnable +"     # Virtual DIP switch configuration",
+            "BOOTMAGIC_ENABLE = "+ BootmagicEnable +"     # Enable Bootmagic Lite",
             "MOUSEKEY_ENABLE = "+ MousekeyEnable +"       # Mouse keys",
             "EXTRAKEY_ENABLE = "+ ExtrakeyEnable +"       # Audio control and System control",
             "CONSOLE_ENABLE = yes        # Console for debug",
@@ -994,8 +994,6 @@ document.getElementById('submit').addEventListener(
             "    \"keyboard_name\": \""+ obj.keyboard.settings.name +"\",",
             "    \"url\": \"\",",
             "    \"maintainer\": \"qmk\",",
-            "    \"width\": "+ obj.keyboard.bounds.max.x +",",
-            "    \"height\": "+ obj.keyboard.bounds.max.y +",",
             "    \"layouts\": {",
             "        \"LAYOUT\": {",
             "            \"layout\": ["

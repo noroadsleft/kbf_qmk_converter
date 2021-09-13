@@ -684,7 +684,7 @@ document.getElementById('submit').addEventListener(
         for ( row = 0; row < matrix_rows; row++ ) {
             matrix[row] = new Array(matrix_cols);
             for ( col = 0; col < matrix_cols; col++ ) {
-                matrix[row][col] = "KC_NO";
+                matrix[row][col] = "XXX";
             }
         }
         //console.log( matrix );
@@ -708,6 +708,8 @@ document.getElementById('submit').addEventListener(
             "#pragma once",
             "",
             "#include \"quantum.h\"",
+            "",
+            "#define XXX KC_NO",
             "",
             "#define LAYOUT( \\",
             ") { \\",
@@ -952,7 +954,7 @@ document.getElementById('submit').addEventListener(
                 } else {
                     console.error( "keycode "+ append +" not recognized!" );
                 }
-                matrix[matrixRow][matrixCol] = "K"+ base32hex.substr( obj.keyboard.keys[key].row , 1) + base32hex.substr( obj.keyboard.keys[key].col , 1) +"  ";
+                matrix[matrixRow][matrixCol] = "K"+ base32hex.substr( obj.keyboard.keys[key].row , 1) + base32hex.substr( obj.keyboard.keys[key].col , 1);
             }
             layerData_suffix = "    ),";
 
@@ -1175,11 +1177,11 @@ document.getElementById('submit').addEventListener(
         );
 
         for ( i = matrix_rows-1; i >= 0; i-- ) {
-            // inserts Electrical Switch Matrix at index 21 (22nd line)
-            layoutMacroOutput.splice(22, 0, "    { "+ matrix[i].join(', ').replace(/( +),/g, ",$1") +" }, \\" );
+            // inserts Electrical Switch Matrix at index 24 (25th line)
+            layoutMacroOutput.splice(24, 0, "    { "+ matrix[i].join(', ').replace(/( +),/g, ",$1") +" }, \\" );
         }
-        // inserts Physical Switch Matrix at index 20
-        layoutMacroOutput.splice(21, 0, layoutMacro);
+        // inserts Physical Switch Matrix at index 23
+        layoutMacroOutput.splice(23, 0, layoutMacro);
 
 
         /**********************************************

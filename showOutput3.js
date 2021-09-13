@@ -1009,9 +1009,9 @@ document.getElementById('submit').addEventListener(
         ** CREATE LAYOUT CONTAINER **
         ****************************/
         //var layoutMacro = new Array( keymapHeight );
-        var layoutMacro = "";
+        var layoutMacro = "    ";
         for ( i=0 ; i<keymapHeight; i++ ) {
-            layoutMacro += " ".repeat( ( keymapWidth * 5 ) + 4 ) + "\\";
+            layoutMacro += " \\";
         }
         var layoutMacro_rowOffset = ( keymapWidth * 5 ) + 5;
         //console.log( layoutMacro );
@@ -1034,31 +1034,37 @@ document.getElementById('submit').addEventListener(
             var pinCol = obj.keyboard.pins.col[obj.keyboard.keys[key].col];
             var label = ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('') + " ("+ [pinRow,pinCol].join(',') +")";
 
-            var pos = y +"."+ ( x / 100 ).toString().replace(/\./g, "");
-            keyObject = new Array( pos, y, x, yo, label, w, h );
+            keyObject = new Array(
+                key,
+                '"y": '+ y,
+                '"x": '+ x,
+                '"label": "'+ label +'"',
+                '"w": '+ w,
+                '"h": '+ h
+            );
             //console.log ( "y,yo -> "+ y +","+ yo +" | "+ keyObject.join(', ') );
 
             if ( h == 1 ) {
-                //keyObject.splice(6, 1);
+                keyObject.splice(5, 1);
             }
             if ( w == 1 ) {
-                //keyObject.splice(5, 1);
+                keyObject.splice(4, 1);
             }
 
             keyObjects[key] = keyObject.join('\t');
 
             infojsonOutput.push(
                 [
-                    "{\"label\":\""+ [
+                    "{\"label\": \""+ [
                         "K",
                         base32hex.substr(obj.keyboard.keys[key].row, 1),
                         base32hex.substr(obj.keyboard.keys[key].col, 1)
                     ].join('') +
                     " (" + pinRow +"," + pinCol +")"+
                     "\"",
-                    "\"x\":"+ x,
-                    "\"y\":"+ y,
-                    "\"yo\":"+ yo +"},"
+                    "\"x\": "+ x,
+                    "\"y\": "+ y/*,
+                    "\"yo\": "+ yo*/ +"},"
                     /*"\"offset\":"+ vOffset + */
                 ].join(', ')
             );
@@ -1148,26 +1154,27 @@ document.getElementById('submit').addEventListener(
             }
 
             //build physical layout macro
-            if ( keyObjects[key][3] >= 6 ) {
+            if ( keyObjects[key][3] >= 6000 ) {
                 // A key this long is probably a spacebar, so handle it differently
                 layoutMacro_start = (
                     /* V Offset */
                     Number( Math.floor( keyObjects[key][0] ) * layoutMacro_rowOffset ) +
                     /* H Offset */
-                    ( keyObjects[key][1] * 5 ) + Math.floor( keyObjects[key][3] * 2 )
+                    ( keyObjects[key][1] * 5 ) + Math.round( keyObjects[key][3] * 2 )
                 );
             } else {
-                layoutMacro_start = ( Number( Math.floor( keyObjects[key][0] ) * layoutMacro_rowOffset ) + ( keyObjects[key][1] * 5 ) );
+                //layoutMacro_start = ( Number( Math.round( keyObjects[key][0] ) * layoutMacro_rowOffset ) + ( keyObjects[key][1] * 5 ) );
+                layoutMacro += keyObjects[key][0];
             }
-            layoutMacro_end = Number(layoutMacro_start + 5);
-            layoutMacro = layoutMacro.replaceBetween( layoutMacro_start, layoutMacro_end, keyObjects[key][2].replace(/ \(.*/, "")+", " );
+            //layoutMacro_end = Number(layoutMacro_start + 5);
+            //layoutMacro = layoutMacro.replaceBetween( layoutMacro_start, layoutMacro_end, keyObjects[key][2].replace(/ \(.*/, "")+", " );
         }
         //console.log( "^" + layoutMacro + "$" );
-        layoutMacro = "    "+ layoutMacro
-            .replace(/,( +)\\$/g, " $1\\")
+        //layoutMacro = "    "+ layoutMacro
+            /*.replace(/,( +)\\$/g, " $1\\")
             .replace(/\\/g, "\\\n    ")
             .replace(/\\\n    $/g, "\\")
-            .replace(/  \\/g, "\\")
+            .replace(/  \\/g, "\\")*/
         ;
         //physicalMatrix = physicalMatrix.replace(/, \\$/, "")
 

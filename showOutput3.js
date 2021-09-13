@@ -1002,6 +1002,8 @@ document.getElementById('submit').addEventListener(
             "            \"layout\": ["
         ];
 
+        // How many lines is the info.json "preamble"?
+        var infojsonPreambleLines = infojsonOutput.length;
 
         /****************************
         ** CREATE LAYOUT CONTAINER **
@@ -1132,8 +1134,8 @@ document.getElementById('submit').addEventListener(
             if ( keyObjects[key][3] == 1 ) {
                 infojsonOutputArray.splice(3, 1);
             }
-            // key output starts at line 10
-            infojsonOutput[key+9] = "{" + infojsonOutputArray.join(', ') +
+            // key output starts at `infojsonPreambleLines`+1
+            infojsonOutput[key+infojsonPreambleLines] = "{" + infojsonOutputArray.join(', ') +
                 /*[
                     "\"label\":\""+ keyObjects[key][2] +"\"",
                     "\"x\":"+ keyObjects[key][1],
@@ -1250,10 +1252,10 @@ document.getElementById('submit').addEventListener(
                                 var insLine = document.createElement('code');
                                 preElement.setAttribute('class', "language-json");
                                 // Only output a comma at the end of the line if there's another key object to add
-                                //         ┌ Offset 9 because there are 9 lines before the actual layout data starts
-                                //         │             ┌ 9+keys because that's the last line that should have a comma
-                                //         ↓             ↓
-                                if ( ( n > 9 ) && ( n < 9+keyCount ) ) {
+                                //         ┌ there are `infojsonPreambleLines` lines before the actual layout data starts
+                                //         │                                 ┌ 6+keys because that's the last line that should have a comma
+                                //         ↓                                 ↓
+                                if ( ( n > infojsonPreambleLines ) && ( n < 9+keyCount ) ) {
                                     insLine.innerHTML = line.replace(/^{\"label/, " ".repeat(16) + "{\"label" ).replace(/\},/g, "},") +"\n";
                                 } else /* if ( n == 9+keys ) */ {
                                     insLine.innerHTML = line.replace(/^{\"label/, " ".repeat(16) + "{\"label" ).replace(/(\{\"label.*\}),/g, "$1") +"\n";

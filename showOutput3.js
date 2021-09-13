@@ -1035,14 +1035,13 @@ document.getElementById('submit').addEventListener(
             var label = ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('') + " ("+ [pinRow,pinCol].join(',') +")";
 
             keyObject = new Array(
-                key,
-                '"y": '+ y,
-                '"x": '+ x,
                 '"label": "'+ label +'"',
+                '"seq": "'+ key +'"',
+                '"x": '+ x,
+                '"y": '+ y,
                 '"w": '+ w,
                 '"h": '+ h
             );
-            //console.log ( "y,yo -> "+ y +","+ yo +" | "+ keyObject.join(', ') );
 
             if ( h == 1 ) {
                 keyObject.splice(5, 1);
@@ -1051,22 +1050,11 @@ document.getElementById('submit').addEventListener(
                 keyObject.splice(4, 1);
             }
 
+            //console.log( keyObject.join('\t') );
             keyObjects[key] = keyObject.join('\t');
 
             infojsonOutput.push(
-                [
-                    "{\"label\": \""+ [
-                        "K",
-                        base32hex.substr(obj.keyboard.keys[key].row, 1),
-                        base32hex.substr(obj.keyboard.keys[key].col, 1)
-                    ].join('') +
-                    " (" + pinRow +"," + pinCol +")"+
-                    "\"",
-                    "\"x\": "+ x,
-                    "\"y\": "+ y/*,
-                    "\"yo\": "+ yo*/ +"},"
-                    /*"\"offset\":"+ vOffset + */
-                ].join(', ')
+                " ".repeat(16) + "{" + keyObject.join(', ') + "},"
             );
 
             if ( w != 1 ) {
@@ -1127,29 +1115,6 @@ document.getElementById('submit').addEventListener(
             keyObjects[key][0] = Number( keyObjects[key][0] ) + Number( keyObjects[key][2] );
             keyObjects[key].splice(2, 1);
 
-            var infojsonOutputArray = [
-                "\"label\":\""+ keyObjects[key][2] +"\"",
-                "\"x\":"+ keyObjects[key][1],
-                "\"y\":"+ keyObjects[key][0],
-                "\"w\":"+ keyObjects[key][3],
-                "\"h\":"+ keyObjects[key][4]
-            ];
-            if ( keyObjects[key][4] == 1 ) {
-                infojsonOutputArray.splice(4, 1);
-            }
-            if ( keyObjects[key][3] == 1 ) {
-                infojsonOutputArray.splice(3, 1);
-            }
-            // key output starts at `infojsonPreambleLines`+1
-            infojsonOutput[key+infojsonPreambleLines] = "{" + infojsonOutputArray.join(', ') +
-                /*[
-                    "\"label\":\""+ keyObjects[key][2] +"\"",
-                    "\"x\":"+ keyObjects[key][1],
-                    "\"y\":"+ keyObjects[key][0],
-                    "\"w\":"+ keyObjects[key][3],
-                    "\"h\":"+ keyObjects[key][4]
-                ].join(', ') +*/
-                "},";
             if ( key == ( keyCount-1 ) ) {
             }
 
@@ -1262,10 +1227,11 @@ document.getElementById('submit').addEventListener(
                                 //         ┌ there are `infojsonPreambleLines` lines before the actual layout data starts
                                 //         │                                 ┌ 6+keys because that's the last line that should have a comma
                                 //         ↓                                 ↓
-                                if ( ( n > infojsonPreambleLines ) && ( n < 9+keyCount ) ) {
-                                    insLine.innerHTML = line.replace(/^{\"label/, " ".repeat(16) + "{\"label" ).replace(/\},/g, "},") +"\n";
+                                if ( ( n > infojsonPreambleLines ) && ( n < infojsonPreambleLines+keyCount ) ) {
+                                    insLine.innerHTML = line.replace(/\},/g, "},") +"\n";
                                 } else /* if ( n == 9+keys ) */ {
-                                    insLine.innerHTML = line.replace(/^{\"label/, " ".repeat(16) + "{\"label" ).replace(/(\{\"label.*\}),/g, "$1") +"\n";
+                                    // remove the trailing comma on the last key's JSON object
+                                    insLine.innerHTML = line.replace(/(\{\"label.*\}),/g, "$1") +"\n";
                                 }
                                 preElement.appendChild( insLine );
                             }

@@ -642,15 +642,6 @@ document.getElementById('submit').addEventListener(
         /***************
         ** keyboard.c **
         ***************/
-        var matrix = new Array(matrix_rows);
-
-        for ( row = 0; row < matrix_rows; row++ ) {
-            matrix[row] = new Array(matrix_cols);
-            for ( col = 0; col < matrix_cols; col++ ) {
-                matrix[row][col] = "KC_NO";
-            }
-        }
-        //console.log( matrix );
         var keyboardCOutput = [
             "/* Copyright "+ year +" REPLACE_WITH_YOUR_NAME",
             " *",

@@ -40,6 +40,16 @@ String.prototype.replaceBetween = function(start, end, new_string) {
 };
 
 
+/**
+ * @brief round a floating point number
+ *   i : number to round
+ *   p : points of precision
+ */
+function fp_round(i, p) {
+    return Math.round( i * Math.pow(10, p) ) / Math.pow(10, p);
+};
+
+
 document.getElementById("c_config").addEventListener(
     "click",
     function(){
@@ -1010,12 +1020,12 @@ document.getElementById('submit').addEventListener(
         var keyObjects = new Array(keyCount);
         for ( key=0; key<keyCount; key++ ) {
             // Key Dimensions and Positioning
-            var w = obj.keyboard.keys[key].state.w;
-            var h = obj.keyboard.keys[key].state.h;
-            var x = obj.keyboard.keys[key].state.x;
+            var w = fp_round( obj.keyboard.keys[key].state.w , 3 );
+            var h = fp_round( obj.keyboard.keys[key].state.h , 3 );
+            var x = fp_round( obj.keyboard.keys[key].state.x , 3 );
             // check y-axis vertical offset (handling vertically-offset keys)
-            var y = Math.floor( obj.keyboard.keys[key].state.y );
-            var yo = obj.keyboard.keys[key].state.y - y;
+            var y = fp_round( obj.keyboard.keys[key].state.y , 3 );
+            //var yo = obj.keyboard.keys[key].state.y - y;
 
             // Electrical Data
             var pinRow = obj.keyboard.pins.row[obj.keyboard.keys[key].row];

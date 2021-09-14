@@ -375,8 +375,6 @@ document.getElementById('submit').addEventListener(
         var kbWidth = obj.keyboard.bounds.max.x;
 
         // keymap.c layer dimensions
-        var keymapHeight = Math.floor( kbHeight + 0 );
-        var keymapWidth = Math.floor( kbWidth + 0 );
 
         var baseData = [
             "Keyboard Name: "+ kb.settings.name,
@@ -756,15 +754,9 @@ document.getElementById('submit').addEventListener(
         var layerCount = obj.keyboard.keys[0].keycodes.length;
         for ( layer=0; layer<layerCount; layer++ ) {
             //console.log( "Processing Layer "+ layer +"..." );
-            var layerData_prefix = "    ["+ layer +"] = LAYOUT(\n";
-            var layerData2 = "";
-            layerData_rowOffset = Math.ceil( kbWidth * 9 ) + 1;
-            for ( i=0; i<keymapHeight; i++ ) {
-                layerData2 +=
-                    //" ".repeat(8) +
-                    " ".repeat( layerData_rowOffset - 1 ) + "\\"
-                ;
-            }
+            var layerData_prefix = "\n    ["+ layer +"] = LAYOUT(\n";
+            var layerData2 = " ".repeat(8) + "\\";
+            //layerData_rowOffset = Math.ceil( kbWidth * 9 ) + 1;
             var transCodes = 0;
 
             /*
@@ -940,35 +932,52 @@ document.getElementById('submit').addEventListener(
                     } //else if ( keycode.substr( ) )
                     //var append = keycode;
                     //console.log( "adding keycode: "+ append + " | layerData2.length: "+ layerData2.length );
-                    layerData2_start = ( layerData_rowOffset * Math.floor( obj.keyboard.keys[key].state.y ) ) + ( obj.keyboard.keys[key].state.x * 9 );
-                    if ( kb.keys[key].state.w > 5.75 ) {
-                        layerData2_start += Math.floor( Math.round( kb.keys[key].state.w * 9 ) / 2 ) - ( append.length + 2 );
+                    //layerData2_start = ( layerData_rowOffset * Math.floor( obj.keyboard.keys[key].state.y ) ) + ( obj.keyboard.keys[key].state.x * 9 );
+                    // if ( kb.keys[key].state.w > 5.75 ) {
+                    //     layerData2_start += Math.floor( Math.round( kb.keys[key].state.w * 9 ) / 2 ) - ( append.length + 2 );
+                    // }
+                    layerData2 = layerData2.replace(
+                        /\\$/g,
+                        append + "," + " ".repeat(9 - append.length - 1 ) + "\\"
+                    );
+                    // add a line break if the next key starts a new row
+                    if ( ( key < keyCount-1 ) ) {
+                        /*
+                        console.log(
+                            key + ": " + append + "\t" +
+                            [
+                                ["compare X -> ", kb.keys[key].state.x > kb.keys[key+1].state.x].join(''),
+                                ["compare Y -> ", kb.keys[key].state.y < ( kb.keys[key+1].state.y - 0.5 )].join('')
+                            ].join('\t')
+                        );
+                        */
+                        if (
+                            ( kb.keys[key].state.x > kb.keys[key+1].state.x ) &&
+                            ( kb.keys[key].state.y < ( kb.keys[key+1].state.y - 0.5 ) )
+                        ) {
+                            layerData2 = layerData2.replace(
+                                /\\$/g,
+                                "\n" + " ".repeat(keymap_line_indent) + "\\"
+                            );
+                        }
                     }
-                    layerData2 =
-                        //append
-                        layerData2.replaceBetween(
-                            layerData2_start,
-                            layerData2_start + 9,
-                            append + "," + " ".repeat( 9 - append.length - 1 )
-                        )
-                    ;
                 } else {
                     console.error( "keycode "+ append +" not recognized!" );
                 }
                 matrix[matrixRow][matrixCol] = "K"+ base32hex.substr( obj.keyboard.keys[key].row , 1) + base32hex.substr( obj.keyboard.keys[key].col , 1);
             }
-            layerData_suffix = "    ),";
+            layerData_suffix = "\n    ),\n";
 
             // Only output the layer if non-KC_TRNS keycodes are present (blank layers are suppressed).
             if ( transCodes != keyCount ) {
                 keymapData +=
                     layerData_prefix +
-                    " ".repeat(keymap_line_indent) +
+                    //" ".repeat(keymap_line_indent) +
                     layerData2
-                        .replace(/,( +)\\$/, " $1\n")
-                        .replace(/ +\n/g, "\n")
+                        .replace(/,( +)\\$/, " $1")
+                        //.replace(/ +\n/g, "\n")
                         .replace(/ +\\/g, "\n" + " ".repeat(keymap_line_indent)) +
-                    layerData_suffix + "\n"
+                    layerData_suffix
                 ;
             }
 
@@ -1015,7 +1024,6 @@ document.getElementById('submit').addEventListener(
             layoutMacro += "";
         }
         */
-        var layoutMacro_rowOffset = ( keymapWidth * 5 ) + 5;
         console.log( layoutMacro );
 
         /*******************************
@@ -1038,24 +1046,20 @@ document.getElementById('submit').addEventListener(
             var keyPins = [pinRow,pinCol].join(',');
 
             keyObject = new Array(
-                '"label": "'+ keyLabel +'"',
-                '"pins": "['+ keyPins +']"',
-                '"seq": '+ key,
+                '"label": "' + keyLabel +' (' + keyPins + ')"',
                 '"x": '+ x,
                 '"y": '+ y,
                 '"w": '+ w,
                 '"h": '+ h
             );
 
-            /*
             // Remove width and/or height keys if value is equal to 1
             if ( h == 1 ) {
-                keyObject.splice(6, 1);
+                keyObject.splice(4, 1);
             }
             if ( w == 1 ) {
-                keyObject.splice(5, 1);
+                keyObject.splice(3, 1);
             }
-            */
 
             keyObjects[key] = keyObject.join('\t');
 
@@ -1089,10 +1093,11 @@ document.getElementById('submit').addEventListener(
         newRow = new Array();
         for ( key=0; key<keyCount; key++ ) {
             keyObjects[key] = keyObjects[key].split('\t');
-            keyY = keyObjects[key][4].split(': ')[1];
-            keyX = keyObjects[key][3].split(': ')[1];
-            keyWidth = keyObjects[key][5].split(': ')[1];
-            matrixIdent = keyObjects[key][0].split(': ')[1].replace(/[" ]/g, "");
+            keyY = keyObjects[key][2].split(': ')[1];
+            keyX = keyObjects[key][1].split(': ')[1];
+            //keyWidth = keyObjects[key][5].split(': ')[1];
+            //console.log(  keyX + "@" + keyY );
+            matrixIdent = keyObjects[key][0].split(': ')[1].split(' ')[0].replace(/["]/g, "");
 
             if ( key == ( keyCount-1 ) ) {
             }
@@ -1101,7 +1106,7 @@ document.getElementById('submit').addEventListener(
             // add key to layout macro
             layoutMacro = layoutMacro.replace(
                 /\\$/g,
-                keyObjects[key][0].split(': ')[1].replace(/[" ]/g, "") + ", \\"
+                matrixIdent + ", \\"
             );
             // Is the just-added key wider than 1u?
             /*
@@ -1115,24 +1120,23 @@ document.getElementById('submit').addEventListener(
             }
             */
             // Does the just-added key need to start a new row?
-            if ( key > 0 ) {
-                if ( keyY > keyObjects[key-1][4].split(': ')[1] ) {
-                    if ( keyObjects[key][3].split(': ')[1] < keyObjects[key-1][3].split(': ')[1] ) {
-                        newRow.push( matrixIdent );
-                    }
+            if ( key < keyCount-1 ) {
+
+                if (
+                    ( kb.keys[key].state.x > kb.keys[key+1].state.x ) &&
+                    ( kb.keys[key].state.y < ( kb.keys[key+1].state.y - 0.5 ) )
+                ) {
+                    layoutMacro = layoutMacro.replace(
+                        /\\$/g,
+                        "\n" + " ".repeat(4) + "\\"
+                    );
                 }
             }
         }
         // remove the last comma
         layoutMacro = layoutMacro.replace(/, \\$/g, "  \\");
-        // break up the physical arrangement into rows
-        /*
-        */
-        for ( ident = 0 ; ident<newRow.length; ident++ ) {
-            var searchRegex = newRow[ident] ;
-            var Regex = new RegExp( searchRegex, "g" );
-            layoutMacro = layoutMacro.replace(Regex, "\\\n    $&");
-        }
+        // insert missing backslashes
+        layoutMacro = layoutMacro.replace(/\n/g, "\\\n");
 
         infojsonOutput.push(
             "            ]",
@@ -1218,11 +1222,13 @@ document.getElementById('submit').addEventListener(
                                 //         ┌ there are `infojsonPreambleLines` lines before the actual layout data starts
                                 //         │                                 ┌ 6+keys because that's the last line that should have a comma
                                 //         ↓                                 ↓
-                                if ( ( n > infojsonPreambleLines ) && ( n < infojsonPreambleLines+keyCount ) ) {
-                                    insLine.innerHTML = line.replace(/\},/g, "},") +"\n";
-                                } else /* if ( n == 9+keys ) */ {
+                                if ( n == infojsonPreambleLines+keyCount ) {
+                                    console.log( "removing trailing comma on the last key's JSON object...\n\t" + line );
                                     // remove the trailing comma on the last key's JSON object
-                                    insLine.innerHTML = line.replace(/(\{\"label.*\}),/g, "$1") +"\n";
+                                    insLine.innerHTML = line.replace(/\},$/g, "}") +"\n";
+                                }
+                                else {
+                                    insLine.innerHTML = line +"\n";
                                 }
                                 preElement.appendChild( insLine );
                             }

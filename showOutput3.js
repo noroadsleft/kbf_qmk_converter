@@ -1009,12 +1009,14 @@ document.getElementById('submit').addEventListener(
         ** CREATE LAYOUT CONTAINER **
         ****************************/
         //var layoutMacro = new Array( keymapHeight );
-        var layoutMacro = "    ";
+        var layoutMacro = "     \\";
+        /*
         for ( i=0 ; i<keymapHeight; i++ ) {
-            layoutMacro += " \\";
+            layoutMacro += "";
         }
+        */
         var layoutMacro_rowOffset = ( keymapWidth * 5 ) + 5;
-        //console.log( layoutMacro );
+        console.log( layoutMacro );
 
         /*******************************
         ** CREATE info.json STRUCTURE **
@@ -1032,10 +1034,12 @@ document.getElementById('submit').addEventListener(
             // Electrical Data
             var pinRow = obj.keyboard.pins.row[obj.keyboard.keys[key].row];
             var pinCol = obj.keyboard.pins.col[obj.keyboard.keys[key].col];
-            var label = ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('') + " ("+ [pinRow,pinCol].join(',') +")";
+            var label = ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('');
+            var pins = [pinRow,pinCol].join(',');
 
             keyObject = new Array(
                 '"label": "'+ label +'"',
+                '"pins": "'+ pins +'"',
                 '"seq": "'+ key +'"',
                 '"x": '+ x,
                 '"y": '+ y,
@@ -1043,40 +1047,20 @@ document.getElementById('submit').addEventListener(
                 '"h": '+ h
             );
 
+            // Remove width and/or height keys if value is equal to 1
             if ( h == 1 ) {
-                keyObject.splice(5, 1);
+                keyObject.splice(6, 1);
             }
             if ( w == 1 ) {
-                keyObject.splice(4, 1);
+                keyObject.splice(5, 1);
             }
 
-            //console.log( keyObject.join('\t') );
             keyObjects[key] = keyObject.join('\t');
 
             infojsonOutput.push(
                 " ".repeat(16) + "{" + keyObject.join(', ') + "},"
             );
-
-            if ( w != 1 ) {
-                infojsonOutput[infojsonOutput.length-1] = infojsonOutput[infojsonOutput.length-1].replace(/},$/g, ", \"w\":"+ w +"},");
-            }
-            if ( h != 1 ) {
-                infojsonOutput[infojsonOutput.length-1] = infojsonOutput[infojsonOutput.length-1].replace(/},$/g, ", \"h\":"+ h +"},");
-            }
         }
-        /*
-        for ( row=0; row<keymapHeight; row++ ) {
-            console.log( row +" of "+ keymapHeight );
-            for ( col=0; col<keymapWidth; col++ ) {
-                layoutMacro[row][col] = ["P", base32hex.substr( row, 1), base32hex.substr( col, 1)].join('');
-            }
-        }
-        */
-        /*console.log(
-                "Layout Macro: ("+ keymapHeight +"x"+ keymapWidth +")\n"+
-                "=".repeat(20) +"\n"+
-                layoutMacro
-        );*/
 
         var keymapRowText = "";
         var keymapLayer = "";
@@ -1097,23 +1081,13 @@ document.getElementById('submit').addEventListener(
                         km_layer_row.join(', ');
                     }
                 );
-                //km_layer.join('  ),\n  ');
             }
         );
         keymap = keymap.join('\n\n\n');
-        /*
-            "  ["+ layer +"] = LAYOUT( \\\n"
-              text of keymap layer
-            "  ),"
-        */
-
-        keyObjects.sort();
 
         for ( key=0; key<keyCount; key++ ) {
             keyObjects[key] = keyObjects[key].split('\t');
-            keyObjects[key].splice(0, 1);
-            keyObjects[key][0] = Number( keyObjects[key][0] ) + Number( keyObjects[key][2] );
-            keyObjects[key].splice(2, 1);
+            var newRow = [];
 
             if ( key == ( keyCount-1 ) ) {
             }
@@ -1128,20 +1102,20 @@ document.getElementById('submit').addEventListener(
                     ( keyObjects[key][1] * 5 ) + Math.round( keyObjects[key][3] * 2 )
                 );
             } else {
-                //layoutMacro_start = ( Number( Math.round( keyObjects[key][0] ) * layoutMacro_rowOffset ) + ( keyObjects[key][1] * 5 ) );
-                layoutMacro += keyObjects[key][0];
+                layoutMacro = layoutMacro.replace(
+                    "\\",
+                    keyObjects[key][0].split(':')[1].replace(/[" ]/g, "") + ", \\"
+                );
             }
-            //layoutMacro_end = Number(layoutMacro_start + 5);
-            //layoutMacro = layoutMacro.replaceBetween( layoutMacro_start, layoutMacro_end, keyObjects[key][2].replace(/ \(.*/, "")+", " );
+            if ( key > 0 ) {
+                if ( keyObjects[key][4] > keyObjects[key-1][4] ) {
+                    if ( keyObjects[key][3] < keyObjects[key-1][3] ) {
+                        newRow.push( keyObjects[key][0] );
+                    }
+                }
+            }
+            console.log( newRow.join('; ') );
         }
-        //console.log( "^" + layoutMacro + "$" );
-        //layoutMacro = "    "+ layoutMacro
-            /*.replace(/,( +)\\$/g, " $1\\")
-            .replace(/\\/g, "\\\n    ")
-            .replace(/\\\n    $/g, "\\")
-            .replace(/  \\/g, "\\")*/
-        ;
-        //physicalMatrix = physicalMatrix.replace(/, \\$/, "")
 
         infojsonOutput.push(
             "            ]",

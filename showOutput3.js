@@ -1009,7 +1009,7 @@ document.getElementById('submit').addEventListener(
         ** CREATE LAYOUT CONTAINER **
         ****************************/
         //var layoutMacro = new Array( keymapHeight );
-        var layoutMacro = "     \\";
+        var layoutMacro = "    \\";
         /*
         for ( i=0 ; i<keymapHeight; i++ ) {
             layoutMacro += "";
@@ -1034,19 +1034,20 @@ document.getElementById('submit').addEventListener(
             // Electrical Data
             var pinRow = obj.keyboard.pins.row[obj.keyboard.keys[key].row];
             var pinCol = obj.keyboard.pins.col[obj.keyboard.keys[key].col];
-            var label = ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('');
-            var pins = [pinRow,pinCol].join(',');
+            var keyLabel = ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('');
+            var keyPins = [pinRow,pinCol].join(',');
 
             keyObject = new Array(
-                '"label": "'+ label +'"',
-                '"pins": "'+ pins +'"',
-                '"seq": "'+ key +'"',
+                '"label": "'+ keyLabel +'"',
+                '"pins": "['+ keyPins +']"',
+                '"seq": '+ key,
                 '"x": '+ x,
                 '"y": '+ y,
                 '"w": '+ w,
                 '"h": '+ h
             );
 
+            /*
             // Remove width and/or height keys if value is equal to 1
             if ( h == 1 ) {
                 keyObject.splice(6, 1);
@@ -1054,11 +1055,12 @@ document.getElementById('submit').addEventListener(
             if ( w == 1 ) {
                 keyObject.splice(5, 1);
             }
+            */
 
             keyObjects[key] = keyObject.join('\t');
 
             infojsonOutput.push(
-                " ".repeat(16) + "{" + keyObject.join(', ') + "},"
+                " ".repeat(16) + "{ " + keyObject.join(', ') + " },"
             );
         }
 
@@ -1084,37 +1086,52 @@ document.getElementById('submit').addEventListener(
             }
         );
         keymap = keymap.join('\n\n\n');
-
+        newRow = new Array();
         for ( key=0; key<keyCount; key++ ) {
             keyObjects[key] = keyObjects[key].split('\t');
-            var newRow = [];
+            keyY = keyObjects[key][4].split(': ')[1];
+            keyX = keyObjects[key][3].split(': ')[1];
+            keyWidth = keyObjects[key][5].split(': ')[1];
+            matrixIdent = keyObjects[key][0].split(': ')[1].replace(/[" ]/g, "");
 
             if ( key == ( keyCount-1 ) ) {
             }
 
             //build physical layout macro
-            if ( keyObjects[key][3] >= 6000 ) {
-                // A key this long is probably a spacebar, so handle it differently
-                layoutMacro_start = (
-                    /* V Offset */
-                    Number( Math.floor( keyObjects[key][0] ) * layoutMacro_rowOffset ) +
-                    /* H Offset */
-                    ( keyObjects[key][1] * 5 ) + Math.round( keyObjects[key][3] * 2 )
-                );
-            } else {
+            // add key to layout macro
+            layoutMacro = layoutMacro.replace(
+                /\\$/g,
+                keyObjects[key][0].split(': ')[1].replace(/[" ]/g, "") + ", \\"
+            );
+            // Is the just-added key wider than 1u?
+            /*
+            if ( keyWidth > 1 ) {
                 layoutMacro = layoutMacro.replace(
-                    "\\",
-                    keyObjects[key][0].split(':')[1].replace(/[" ]/g, "") + ", \\"
+                    matrixIdent,
+                    " ".repeat( Math.floor(((keyWidth-1)*5) / 2) ) +
+                    matrixIdent +
+                    " ".repeat( Math.ceil(((keyWidth-1)*5) / 2) )
                 );
             }
+            */
+            // Does the just-added key need to start a new row?
             if ( key > 0 ) {
-                if ( keyObjects[key][4] > keyObjects[key-1][4] ) {
-                    if ( keyObjects[key][3] < keyObjects[key-1][3] ) {
-                        newRow.push( keyObjects[key][0] );
+                if ( keyY > keyObjects[key-1][4].split(': ')[1] ) {
+                    if ( keyObjects[key][3].split(': ')[1] < keyObjects[key-1][3].split(': ')[1] ) {
+                        newRow.push( matrixIdent );
                     }
                 }
             }
-            console.log( newRow.join('; ') );
+        }
+        // remove the last comma
+        layoutMacro = layoutMacro.replace(/, \\$/g, "  \\");
+        // break up the physical arrangement into rows
+        /*
+        */
+        for ( ident = 0 ; ident<newRow.length; ident++ ) {
+            var searchRegex = newRow[ident] ;
+            var Regex = new RegExp( searchRegex, "g" );
+            layoutMacro = layoutMacro.replace(Regex, "\\\n    $&");
         }
 
         infojsonOutput.push(

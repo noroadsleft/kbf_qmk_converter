@@ -513,15 +513,11 @@ document.getElementById('submit').addEventListener(
         if ( obj.keyboard.settings.chooseBootMagic != null ) {
             // QMKeyboard.cn export
             switch ( obj.keyboard.settings.chooseBootMagic ) {
-                case 0:
-                    var BootmagicEnable = "full";
-                    break;
                 case 1:
                     var BootmagicEnable = "no  ";
                     break;
-                case 2:
-                    var BootmagicEnable = "lite";
-                    break;
+                default:
+                    var BootmagicEnable = "yes ";
             }
         }
         else if ( obj.keyboard.settings.bootMagic != null ) {
@@ -530,16 +526,12 @@ document.getElementById('submit').addEventListener(
                 case 0:
                     var BootmagicEnable = "no  ";
                     break;
-                case 1:
-                    var BootmagicEnable = "lite";
-                    break;
-                case 2:
-                    var BootmagicEnable = "full";
-                    break;
+                default:
+                    var BootmagicEnable = "yes ";
             }
         }
         else {
-            var BootmagicEnable = "lite";
+            var BootmagicEnable = "yes ";
         }
 
         /* MOUSEKEY_ENABLE */

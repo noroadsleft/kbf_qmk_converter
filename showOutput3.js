@@ -775,9 +775,9 @@ document.getElementById('submit').addEventListener(
         var infojsonOutput = [
             "{",
             "    \"keyboard_name\": \""+ obj.keyboard.settings.name +"\",",
-            "    \"manufacturer\": \"Your Name Here\",",
+            "    \"manufacturer\": \"\",",
             "    \"url\": \"\",",
-            "    \"maintainer\": \"Your Name Here\",",
+            "    \"maintainer\": \"qmk\",",
             "    \"usb\": {",
             "        \"vid\": \"0xFEED\",",
             "        \"pid\": \"0x0000\",",
@@ -789,12 +789,8 @@ document.getElementById('submit').addEventListener(
             "        \"bootmagic\": " + (BootmagicEnable ? "true" : "false") + ",",
             "        \"mousekey\": " + (MousekeyEnable ? "true" : "false") + ",",
             "        \"extrakey\": " + (ExtrakeyEnable ? "true" : "false") + ",",
-            "        \"console\": true,",
-            "        \"command\": true,",
-            "        \"nkro\": false,",
             "        \"backlight\": " + (obj.keyboard.pins.led != null ? "true" : "false") + ",",
             "        \"rgblight\": " + (obj.keyboard.pins.rgb != null ? "true" : "false") + ",",
-            "        \"audio\": false,",
             "        \"key_lock\": " + (KeyLockEnable ? "true" : "false"),
             "    },",
             "    \"diode_direction\": \"" + dd + "\",",
@@ -890,10 +886,10 @@ document.getElementById('submit').addEventListener(
 
             // Remove width and/or height keys if value is equal to 1
             if ( h == 1 ) {
-                keyObject.splice(4, 1);
+                keyObject.splice(5, 1);
             }
             if ( w == 1 ) {
-                keyObject.splice(3, 1);
+                keyObject.splice(4, 1);
             }
 
             keyObjects[key] = keyObject.join('\t');

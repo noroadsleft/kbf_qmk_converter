@@ -772,75 +772,80 @@ document.getElementById('submit').addEventListener(
         /**************
         ** info.json **
         **************/
-        var infoJSON = {};
-        // USB Device Descriptor
-        infoJSON.keyboard_name = obj.keyboard.settings.name;
-        infoJSON.manufacturer = "";
-        infoJSON.url = "";
-        infoJSON.maintainer = "qmk";
-        infoJSON.usb = {};
-        infoJSON.usb.vid = "0xFEED";
-        infoJSON.usb.pid = "0x0000";
-        infoJSON.usb.device_version = "1.0.0";
-        // MCU Configuration
-        infoJSON.processor = MicroController;
-        infoJSON.bootloader = "atmel-dfu";
-        infoJSON.matrix_pins = {};
-        //console.log( typeof obj.keyboard.pins.row );
-        infoJSON.matrix_pins.rows = obj.keyboard.pins.row;
-        infoJSON.matrix_pins.cols = obj.keyboard.pins.col;
-        infoJSON.diode_direction = dd;
-        // QMK Features
-        infoJSON.features = {};
-        infoJSON.features.bootmagic = (BootmagicEnable ? true : false);
-        infoJSON.features.mousekey = (MousekeyEnable ? true : false);
-        infoJSON.features.extrakey = (ExtrakeyEnable ? true : false);
-        infoJSON.features.console = false;
-        infoJSON.features.command = false;
-        infoJSON.features.nkro = false;
-        infoJSON.features.backlight = (obj.keyboard.pins.led != null ? true : false);
-        infoJSON.features.rgblight = (obj.keyboard.pins.rgb != null ? true : false);
-        infoJSON.features.audio = false;
-        infoJSON.features.key_lock = (KeyLockEnable ? true : false);
+        var infoJSON = {
+            // USB Device Descriptor
+            keyboard_name: obj.keyboard.settings.name,
+            manufacturer: "",
+            url: "",
+            maintainer: "qmk",
+            usb: {
+                vid: "0xFEED",
+                pid: "0x0000",
+                device_version: "1.0.0"
+            },
+            // MCU Configuration
+            processor: MicroController,
+            bootloader: "atmel-dfu",
+            matrix_pins: {
+                rows: obj.keyboard.pins.row,
+                cols: obj.keyboard.pins.col
+            },
+            diode_direction: dd,
+            // QMK Features
+            features: {
+                bootmagic: (BootmagicEnable ? true : false),
+                mousekey: (MousekeyEnable ? true : false),
+                extrakey: (ExtrakeyEnable ? true : false),
+                console: false,
+                command: false,
+                nkro: false,
+                backlight: (obj.keyboard.pins.led != null ? true : false),
+                rgblight: (obj.keyboard.pins.rgb != null ? true : false),
+                audio: false,
+                key_lock: (KeyLockEnable ? true : false)
+            },
+        };
 
         if (obj.keyboard.pins.led) {
-            infoJSON.backlight = {};
-            infoJSON.backlight.pin = obj.keyboard.pins.led;
-            infoJSON.backlight.levels = obj.keyboard.settings.backlightLevels;
-            infoJSON.backlight.breathing = false;
+            infoJSON.backlight = {
+                pin: obj.keyboard.pins.led,
+                levels: obj.keyboard.settings.backlightLevels,
+                breathing: false
+            };
         }
         if (obj.keyboard.pins.rgb) {
-            infoJSON.rgblight = {};
-            infoJSON.rgblight.pin = obj.keyboard.pins.rgb;
-            infoJSON.rgblight.led_count = obj.keyboard.settings.rgbNum;
-            infoJSON.rgblight.hue_steps = 8;
-            infoJSON.rgblight.saturation_steps = 8;
-            infoJSON.rgblight.brightness_steps = 8;
-            infoJSON.rgblight.max_brightness = (rgbValMax ?? "255");
-            infoJSON.rgblight.sleep = true;
-            infoJSON.rgblight.animations = {};
-            infoJSON.rgblight.animations.all = true;
+            infoJSON.rgblight = {
+                pin: obj.keyboard.pins.rgb,
+                led_count: obj.keyboard.settings.rgbNum,
+                hue_steps: 8,
+                saturation_steps: 8,
+                brightness_steps: 8,
+                max_brightness: (rgbValMax ?? "255"),
+                sleep: true,
+                animations: {
+                    all: true
+                },
+            };
         }
         if (obj.keyboard.pins.caps || obj.keyboard.pins.num || obj.keyboard.pins.scroll) {
-            //console.log( Object.keys(obj.keyboard.pins).length );
-            //console.log( obj.keyboard.pins );
-            var indicatorsObject = {};
-            indicatorsObject.indicators = {};
+            infoJSON.indicators = {};
             if (obj.keyboard.pins.num) {
-                indicatorsObject.indicators.num_lock = obj.keyboard.pins.num;
+                infoJSON.indicators.num_lock = obj.keyboard.pins.num;
             }
             if (obj.keyboard.pins.caps) {
-                indicatorsObject.indicators.caps_lock = obj.keyboard.pins.caps;
+                infoJSON.indicators.caps_lock = obj.keyboard.pins.caps;
             }
             if (obj.keyboard.pins.scroll) {
-                indicatorsObject.indicators.scroll_lock = obj.keyboard.pins.scroll;
+                infoJSON.indicators.scroll_lock = obj.keyboard.pins.scroll;
             }
             //console.log( JSON.stringify(indicatorsObject) );
             //infoJSON.push(JSON.stringify(indicatorsObject, null, "    "));
         }
-        infoJSON.layouts = {};
-        infoJSON.layouts.LAYOUT = {};
-        infoJSON.layouts.LAYOUT.layout = [];
+        infoJSON.layouts = {
+            LAYOUT: {
+                layout: []
+            }
+        };
 
         // Log the current JSON output:
         //console.log( JSON.stringify(infoJSON, null, " ".repeat(4) ) );

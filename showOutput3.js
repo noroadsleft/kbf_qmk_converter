@@ -950,6 +950,7 @@ document.getElementById('submit').addEventListener(
                     preElement.appendChild( lastLine );
                     // Rerun Prism syntax highlighting on the element
                     Prism.highlightElement(preElement);
+                    document.getElementById("editor").scrollTo(0,0);
                     selectElementText(document.getElementById("editor"));
                     break;
                 case "info.json":
@@ -980,6 +981,7 @@ document.getElementById('submit').addEventListener(
                         }
                     );*/
                     Prism.highlightElement(preElement);
+                    document.getElementById("editor").scrollTo(0,0);
                     selectElementText(document.getElementById("editor"));
                     break;
             }

@@ -969,7 +969,6 @@ document.getElementById('submit').addEventListener(
                         .replace(/"\n +\]/g, "\" ]")
                         .replace(/\[ /g, "[")
                         .replace(/ \]/g, "]")
-                        //.replace(/"(rows|cols)": [/g, "\"$1\"")
                     ;
                     /*infojsonOutput.forEach(
                         function(line) {

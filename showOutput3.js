@@ -357,8 +357,7 @@ document.getElementById('submit').addEventListener(
 
         var baseData = [
             "Keyboard Name: "+ kb.settings.name,
-            "Matrix Rows: "+ matrix_rows,
-            "Matrix Columns: "+ matrix_cols,
+            "Matrix Size: "+ matrix_rows +" rows \u00d7 "+ matrix_cols +" columns",
             "Layer Count: "+ layerCount
         ];
         console.log( baseData.join(' | ') );
@@ -838,8 +837,6 @@ document.getElementById('submit').addEventListener(
             if (obj.keyboard.pins.scroll) {
                 infoJSON.indicators.scroll_lock = obj.keyboard.pins.scroll;
             }
-            //console.log( JSON.stringify(indicatorsObject) );
-            //infoJSON.push(JSON.stringify(indicatorsObject, null, "    "));
         }
         infoJSON.layouts = {
             LAYOUT: {
@@ -881,8 +878,6 @@ document.getElementById('submit').addEventListener(
                 currentKey.h = h;
             }
 
-            //console.log( typeof currentKey +":" );
-            //console.log( currentKey );
             infoJSON.layouts.LAYOUT.layout.push( currentKey );
         }
         // Log the final JSON output:

@@ -357,8 +357,7 @@ document.getElementById('submit').addEventListener(
 
         var baseData = [
             "Keyboard Name: "+ kb.settings.name,
-            "Matrix Rows: "+ matrix_rows,
-            "Matrix Columns: "+ matrix_cols,
+            "Matrix Size: "+ matrix_rows +" rows \u00d7 "+ matrix_cols +" columns",
             "Layer Count: "+ layerCount
         ];
         console.log( baseData.join(' | ') );
@@ -772,99 +771,94 @@ document.getElementById('submit').addEventListener(
         /**************
         ** info.json **
         **************/
-        var infojsonOutput = [
-            "{",
-            "    \"keyboard_name\": \""+ obj.keyboard.settings.name +"\",",
-            "    \"manufacturer\": \"\",",
-            "    \"url\": \"\",",
-            "    \"maintainer\": \"qmk\",",
-            "    \"usb\": {",
-            "        \"vid\": \"0xFEED\",",
-            "        \"pid\": \"0x0000\",",
-            "        \"device_version\": \"1.0.0\"",
-            "    },",
-            "    \"processor\": \"" + MicroController + "\",",
-            "    \"bootloader\": \"atmel-dfu\",",
-            "    \"features\": {",
-            "        \"bootmagic\": " + (BootmagicEnable ? "true" : "false") + ",",
-            "        \"mousekey\": " + (MousekeyEnable ? "true" : "false") + ",",
-            "        \"extrakey\": " + (ExtrakeyEnable ? "true" : "false") + ",",
-            "        \"console\": false,",
-            "        \"command\": false,",
-            "        \"nkro\": false,",
-            "        \"backlight\": " + (obj.keyboard.pins.led != null ? "true" : "false") + ",",
-            "        \"rgblight\": " + (obj.keyboard.pins.rgb != null ? "true" : "false") + ",",
-            "        \"audio\": false,",
-            "        \"key_lock\": " + (KeyLockEnable ? "true" : "false"),
-            "    },",
-            "    \"diode_direction\": \"" + dd + "\",",
-            "    \"matrix_pins\": {",
-            "        \"cols\": [" + obj.keyboard.pins.col.toString().split(',').map(p => `"${p}"`).join(', ') + "],",
-            "        \"rows\": [" + obj.keyboard.pins.row.toString().split(',').map(p => `"${p}"`).join(', ') + "]",
-            "    },",
-        ];
+        var infoJSON = {
+            // USB Device Descriptor
+            keyboard_name: obj.keyboard.settings.name,
+            manufacturer: "",
+            url: "",
+            maintainer: "qmk",
+            usb: {
+                vid: "0xFEED",
+                pid: "0x0000",
+                device_version: "1.0.0"
+            },
+            // MCU Configuration
+            processor: MicroController,
+            bootloader: "atmel-dfu",
+            matrix_pins: {
+                rows: obj.keyboard.pins.row,
+                cols: obj.keyboard.pins.col
+            },
+            diode_direction: dd,
+            // QMK Features
+            features: {
+                bootmagic: (BootmagicEnable ? true : false),
+                mousekey: (MousekeyEnable ? true : false),
+                extrakey: (ExtrakeyEnable ? true : false),
+                console: false,
+                command: false,
+                nkro: false,
+                backlight: (obj.keyboard.pins.led != null ? true : false),
+                rgblight: (obj.keyboard.pins.rgb != null ? true : false),
+                audio: false,
+                key_lock: (KeyLockEnable ? true : false)
+            },
+        };
 
         if (obj.keyboard.pins.led) {
-            infojsonOutput.push(
-                "    \"backlight\": {",
-                "        \"breathing\": false,",
-                "        \"levels\": " + obj.keyboard.settings.backlightLevels + ",",
-                "        \"pin\": \"" + obj.keyboard.pins.led + "\"",
-                "    },",
-            );
+            infoJSON.backlight = {
+                pin: obj.keyboard.pins.led,
+                levels: obj.keyboard.settings.backlightLevels,
+                breathing: false
+            };
         }
-
         if (obj.keyboard.pins.rgb) {
-            infojsonOutput.push(
-                "    \"rgblight\": {",
-                "        \"animations\": {",
-                "            \"all\": true",
-                "        },",
-                "        \"brightness_steps\": 8,",
-                "        \"hue_steps\": 8,",
-                "        \"led_count\": " + obj.keyboard.settings.rgbNum + ",",
-                "        \"max_brightness\": " + (rgbValMax ?? "255") + ",",
-                "        \"pin\": \"" + obj.keyboard.pins.rgb + "\",",
-                "        \"saturation_steps\": 8,",
-                "        \"sleep\": true",
-                "    },"
-            );
+            infoJSON.rgblight = {
+                pin: obj.keyboard.pins.rgb,
+                led_count: obj.keyboard.settings.rgbNum,
+                hue_steps: 8,
+                saturation_steps: 8,
+                brightness_steps: 8,
+                max_brightness: (rgbValMax ?? "255"),
+                sleep: true,
+                animations: {
+                    all: true
+                },
+            };
         }
-
         if (obj.keyboard.pins.caps || obj.keyboard.pins.num || obj.keyboard.pins.scroll) {
-            infojsonOutput.push("    \"indicators\": {");
-            if (obj.keyboard.pins.caps) infojsonOutput.push("        \"caps_lock\": \"" + obj.keyboard.pins.caps + "\",");
-            if (obj.keyboard.pins.num) infojsonOutput.push("        \"num_lock\": \"" + obj.keyboard.pins.num + "\",");
-            if (obj.keyboard.pins.scroll) infojsonOutput.push("        \"scroll_lock\": \"" + obj.keyboard.pins.scroll + "\",");
-            infojsonOutput.push("    },");
+            infoJSON.indicators = {};
+            if (obj.keyboard.pins.num) {
+                infoJSON.indicators.num_lock = obj.keyboard.pins.num;
+            }
+            if (obj.keyboard.pins.caps) {
+                infoJSON.indicators.caps_lock = obj.keyboard.pins.caps;
+            }
+            if (obj.keyboard.pins.scroll) {
+                infoJSON.indicators.scroll_lock = obj.keyboard.pins.scroll;
+            }
         }
+        infoJSON.layouts = {
+            LAYOUT: {
+                layout: []
+            }
+        };
 
-        infojsonOutput.push(
-            "    \"layouts\": {",
-            "        \"LAYOUT\": {",
-            "            \"layout\": ["
-        );
-
-        // How many lines is the info.json "preamble"?
-        var infojsonPreambleLines = infojsonOutput.length;
-
-        /****************************
-        ** CREATE LAYOUT CONTAINER **
-        ****************************/
-        //var layoutMacro = new Array( keymapHeight );
-        var layoutMacro = "    \\";
-        /*
-        for ( i=0 ; i<keymapHeight; i++ ) {
-            layoutMacro += "";
-        }
-        */
-        console.log( layoutMacro );
+        // Log the current JSON output:
+        //console.log( JSON.stringify(infoJSON, null, " ".repeat(4) ) );
 
         /*******************************
         ** CREATE info.json STRUCTURE **
         *******************************/
-        var keyObjects = new Array(keyCount);
         for ( key=0; key<keyCount; key++ ) {
+            var currentKey = {};
+
+            // Electrical Data
+            var pinRow = obj.keyboard.pins.row[obj.keyboard.keys[key].row];
+            var pinCol = obj.keyboard.pins.col[obj.keyboard.keys[key].col];
+            var keyLabel = ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('');
+            var keyPins = [pinRow,pinCol].join(',');
+
             // Key Dimensions and Positioning
             var w = fp_round( obj.keyboard.keys[key].state.w , 3 );
             var h = fp_round( obj.keyboard.keys[key].state.h , 3 );
@@ -873,35 +867,30 @@ document.getElementById('submit').addEventListener(
             var y = fp_round( obj.keyboard.keys[key].state.y , 3 );
             //var yo = obj.keyboard.keys[key].state.y - y;
 
-            // Electrical Data
-            var pinRow = obj.keyboard.pins.row[obj.keyboard.keys[key].row];
-            var pinCol = obj.keyboard.pins.col[obj.keyboard.keys[key].col];
-            var keyLabel = ["K", base32hex.substr(obj.keyboard.keys[key].row, 1), base32hex.substr(obj.keyboard.keys[key].col, 1)].join('');
-            var keyPins = [pinRow,pinCol].join(',');
-
-            keyObject = new Array(
-                '"label": "' + keyLabel +' (' + keyPins + ')"',
-                '"matrix": [' + obj.keyboard.keys[key].row + ", " + obj.keyboard.keys[key].col + "]",
-                '"x": '+ x,
-                '"y": '+ y,
-                '"w": '+ w,
-                '"h": '+ h
-            );
-
-            // Remove width and/or height keys if value is equal to 1
-            if ( h == 1 ) {
-                keyObject.splice(5, 1);
+            currentKey.label = keyLabel +' (' + keyPins + ')';
+            currentKey.matrix = [ obj.keyboard.keys[key].row , obj.keyboard.keys[key].col ];
+            currentKey.x = x;
+            currentKey.y = y;
+            if ( w != 1 ) {
+                currentKey.w = w;
             }
-            if ( w == 1 ) {
-                keyObject.splice(4, 1);
+            if ( h != 1 ) {
+                currentKey.h = h;
             }
 
-            keyObjects[key] = keyObject.join('\t');
-
-            infojsonOutput.push(
-                " ".repeat(16) + "{ " + keyObject.join(', ') + " },"
-            );
+            infoJSON.layouts.LAYOUT.layout.push( currentKey );
         }
+        // Log the final JSON output:
+        /*
+            JSON.stringify(
+                infoJSON,
+                null,
+                " ".repeat(4)
+            )
+        */
+        //console.log( Object.entries(infoJSON) );
+        //infoJSON.matrix_pins.rows = JSON.stringify(Object.values(infoJSON.matrix_pins.rows), null, "");
+        infojsonOutput = Object.entries(infoJSON);
 
         var keymapRowText = "";
         var keymapLayer = "";
@@ -926,60 +915,9 @@ document.getElementById('submit').addEventListener(
         );
         keymap = keymap.join('\n\n\n');
         newRow = new Array();
-        for ( key=0; key<keyCount; key++ ) {
-            keyObjects[key] = keyObjects[key].split('\t');
-            keyY = keyObjects[key][2].split(': ')[1];
-            keyX = keyObjects[key][1].split(': ')[1];
-            //keyWidth = keyObjects[key][5].split(': ')[1];
-            //console.log(  keyX + "@" + keyY );
-            matrixIdent = keyObjects[key][0].split(': ')[1].split(' ')[0].replace(/["]/g, "");
 
-            if ( key == ( keyCount-1 ) ) {
-            }
-
-            //build physical layout macro
-            // add key to layout macro
-            layoutMacro = layoutMacro.replace(
-                /\\$/g,
-                matrixIdent + ", \\"
-            );
-            // Is the just-added key wider than 1u?
-            /*
-            if ( keyWidth > 1 ) {
-                layoutMacro = layoutMacro.replace(
-                    matrixIdent,
-                    " ".repeat( Math.floor(((keyWidth-1)*5) / 2) ) +
-                    matrixIdent +
-                    " ".repeat( Math.ceil(((keyWidth-1)*5) / 2) )
-                );
-            }
-            */
-            // Does the just-added key need to start a new row?
-            if ( key < keyCount-1 ) {
-
-                if (
-                    ( kb.keys[key].state.x > kb.keys[key+1].state.x ) &&
-                    ( kb.keys[key].state.y < ( kb.keys[key+1].state.y - 0.5 ) )
-                ) {
-                    layoutMacro = layoutMacro.replace(
-                        /\\$/g,
-                        "\n" + " ".repeat(4) + "\\"
-                    );
-                }
-            }
-        }
-        // remove the last comma
-        layoutMacro = layoutMacro.replace(/, \\$/g, "  \\");
-        // insert missing backslashes
-        layoutMacro = layoutMacro.replace(/\n/g, "\\\n");
-
-        infojsonOutput.push(
-            "            ]",
-            "        }",
-            "    }",
-            "    ,\"meta\": \"https://noroadsleft.github.io/kbf_qmk_converter/\"",
-            "}",
-        );
+        // Error Checking Tag
+        infoJSON.meta = "https://noroadsleft.github.io/kbf_qmk_converter/";
 
 
         /**********************************************
@@ -989,58 +927,63 @@ document.getElementById('submit').addEventListener(
             preElement.innerHTML = "";
             switch ( OutputFile ) {
                 case "rules.mk":
-                    rulesOutput.forEach(
-                        function(line) {
-                            var insLine = document.createElement('code');
-                            preElement.setAttribute('class', "language-makefile");
-                            insLine.innerHTML = line +"\n";
-                            preElement.appendChild( insLine );
-                        }
-                    );
-                    break;
                 case "keymap.c":
-                    keymapOutput.forEach(
+                    switch ( OutputFile ) {
+                        case "rules.mk":
+                            var PrismText = rulesOutput;
+                            preElement.setAttribute('class', "language-makefile");
+                            break;
+                        case "keymap.c":
+                            var PrismText = keymapOutput;
+                            preElement.setAttribute('class', "language-clike");
+                            break;
+                    }
+                    PrismText.forEach(
                         function(line) {
                             var insLine = document.createElement('code');
-                            preElement.setAttribute('class', "language-clike");
                             insLine.innerHTML = line +"\n";
                             preElement.appendChild( insLine );
                         }
                     );
+                    var lastLine = document.createElement('code');
+                    lastLine.innerHTML = "\n";
+                    preElement.appendChild( lastLine );
+                    // Rerun Prism syntax highlighting on the element
+                    Prism.highlightElement(preElement);
+                    document.getElementById("editor").scrollTo(0,0);
+                    selectElementText(document.getElementById("editor"));
                     break;
                 case "info.json":
                     var n = 0; // Track which line of text is about to be output
-                    infojsonOutput.forEach(
+                    //JSON.stringify(infoJSON, null, " ".repeat(4) )
+                    //JSON.stringify(infoJSON, null, "    ").forEach(
+                    preElement.setAttribute('class', "language-json");
+                    preElement.innerHTML = JSON.stringify(infoJSON, null, " ".repeat(4) )
+                        // Polish the output of layouts tree
+                        .replace(/\n {20,}/g, " ")
+                        .replace(/\n {16,}\}/g, " }")
+                        .replace(/\{ "label"/g, "{\"label\"")
+                        .replace(/([0-9\.]+) \}/g, "$1}")
+                        // Polish the output of matrix_pins tree
+                        .replace(/\n {12}"([BCDEF][0-7])"/g, " \"$1\"")
+                        .replace(/"\n +\]/g, "\" ]")
+                        .replace(/\[ /g, "[")
+                        .replace(/ \]/g, "]")
+                    ;
+                    /*infojsonOutput.forEach(
                         function(line) {
                             if ( typeof line == "string" ) {
                                 n++; // Line number
                                 var insLine = document.createElement('code');
-                                preElement.setAttribute('class', "language-json");
-                                // Only output a comma at the end of the line if there's another key object to add
-                                //         ┌ there are `infojsonPreambleLines` lines before the actual layout data starts
-                                //         │                                 ┌ 6+keys because that's the last line that should have a comma
-                                //         ↓                                 ↓
-                                if ( n == infojsonPreambleLines+keyCount ) {
-                                    console.log( "removing trailing comma on the last key's JSON object...\n\t" + line );
-                                    // remove the trailing comma on the last key's JSON object
-                                    insLine.innerHTML = line.replace(/\},$/g, "}") +"\n";
-                                }
-                                else {
-                                    insLine.innerHTML = line +"\n";
-                                }
                                 preElement.appendChild( insLine );
                             }
                         }
-                    );
+                    );*/
                     Prism.highlightElement(preElement);
+                    document.getElementById("editor").scrollTo(0,0);
+                    selectElementText(document.getElementById("editor"));
                     break;
             }
-            var lastLine = document.createElement('code');
-            lastLine.innerHTML = "\n";
-            preElement.appendChild( lastLine );
-            // Rerun Prism syntax highlighting on the element
-            Prism.highlightElement(preElement);
-            selectElementText(document.getElementById("editor"));
         };
 
         output("info.json");

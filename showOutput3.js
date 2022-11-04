@@ -2,38 +2,6 @@ console.log( "Running showOutput3.js..." );
 
 const year = new Date().getFullYear();
 
-/***************************************
-** https://stackoverflow.com/a/987376 **
-***************************************/
-function selectElementText(el, win) {
-    win = win || window;
-    var doc = win.document, sel, range;
-    if (win.getSelection && doc.createRange) {
-        sel = win.getSelection();
-        range = doc.createRange();
-        range.selectNodeContents(el);
-        sel.removeAllRanges();
-        sel.addRange(range);
-    } else if (doc.body.createTextRange) {
-        range = doc.body.createTextRange();
-        range.moveToElementText(el);
-        range.select();
-    }
-}
-
-//selectElementText(document.getElementById("someElement"));
-//selectElementText(elementInIframe, iframe.contentWindow);
-function highlightTab(tab) {
-    var el = document.getElementsByClassName('panel3')[0].getElementsByTagName('ul')[0];
-    for ( i=0; i<el.getElementsByTagName('li').length; i++ ) {
-        if ( el.getElementsByTagName('li')[i].getAttribute('id') == "c_"+tab ) {
-            el.getElementsByTagName('li')[i].setAttribute('class', "selected");
-        } else {
-            el.getElementsByTagName('li')[i].removeAttribute('class');
-        }
-    }
-}
-
 // https://stackoverflow.com/a/14880260
 String.prototype.replaceBetween = function(start, end, new_string) {
   return this.substring(0, start) + new_string + this.substring(end);
@@ -49,40 +17,15 @@ function fp_round(i, p) {
     return Math.round( i * Math.pow(10, p) ) / Math.pow(10, p);
 };
 
-
-document.getElementById("c_rules").addEventListener(
-    "click",
-    function(){
-        output("rules.mk");
-        highlightTab("rules");
-    }
-);
-document.getElementById("c_keymap").addEventListener(
-    "click",
-    function(){
-        output("keymap.c");
-        highlightTab("keymap");
-    }
-);
-document.getElementById("c_info").addEventListener(
-    "click",
-    function(){
-        output("info.json");
-        highlightTab("info");
-    }
-);
-
-
-document.getElementById('copy').addEventListener(
+document.querySelector('#copy').addEventListener(
     "click",
     function() {
-        document.execCommand('copy');
-        var filename = document.getElementsByClassName('selected')[0].innerHTML.replace(/&[lg]t;/g, "");
-        var status = document.getElementById('status');
-        var notice = document.createTextNode(filename +' contents copied to clipboard.');
-        status.innerHTML = "";
-        status.appendChild(notice);
-        status.setAttribute('style', "display: block;");
+        var selectedTabCode = document.querySelector('.tab-pane.active code');
+        navigator.clipboard.writeText(selectedTabCode.textContent).then(function() {
+            var selectedTabName = document.querySelector('.nav-link.active').textContent;
+            document.querySelector('#status').classList.remove('d-none');
+            document.querySelector('#copied-filename').textContent = selectedTabName;
+        });
     }
 );
 
@@ -111,8 +54,8 @@ const longFormKeycodes = {
     KC_CAPSLOCK: 'KC_CAPS',
     KC_CLCK: 'KC_CAPS',
     KC_PSCREEN: 'KC_PSCR',
-    KC_SCROLLLOCK: 'KC_SLCK',
-    KC_BRMD: 'KC_SLCK',
+    KC_SCROLLLOCK: 'KC_SCRL',
+    KC_BRMD: 'KC_SCRL',
     KC_PAUSE: 'KC_PAUS',
     KC_BRK: 'KC_PAUS',
     KC_BRMU: 'KC_PAUS',
@@ -120,7 +63,7 @@ const longFormKeycodes = {
     KC_DELETE: 'KC_DEL',
     KC_PGDOWN: 'KC_PGDN',
     KC_RIGHT: 'KC_RGHT',
-    KC_NUMLOCK: 'KC_NLCK',
+    KC_NUMLOCK: 'KC_NUM',
     KC_KP_SLASH: 'KC_PSLS',
     KC_KP_ASTERISK: 'KC_PAST',
     KC_KP_MINUS: 'KC_PMNS',
@@ -148,13 +91,6 @@ const longFormKeycodes = {
     KC_LOCKING_NUM: 'KC_LNUM',
     KC_LOCKING_SCROLL: 'KC_LSCR',
     KC_KP_COMMA: 'KC_PCMM',
-    KC_INT1: 'KC_RO',
-    KC_INT2: 'KC_KANA',
-    KC_INT3: 'KC_JYEN',
-    KC_INT4: 'KC_HENK',
-    KC_INT5: 'KC_MHEN',
-    KC_LANG1: 'KC_HAEN',
-    KC_LANG2: 'KC_HANJ',
     KC_ALT_ERASE: 'KC_ERAS',
     KC_CLEAR: 'KC_CLR',
     KC_LCTRL: 'KC_LCTL',
@@ -193,7 +129,8 @@ const longFormKeycodes = {
     KC_BRIGHTNESS_DOWN: 'KC_BRID',
 
     // Quantum
-    EEPROM_RESET: 'EEP_RST',
+    RESET: 'QK_BOOT',
+    EEPROM_RESET: 'EE_CLR',
 
     // Audio Keys
     CLICKY_TOGGLE: 'CK_TOGG',
@@ -240,7 +177,7 @@ const longFormKeycodes = {
     DYN_REC_STOP: 'DM_RSTP',
 
     // Grave Escape
-    GRAVE_ESC: 'KC_GESC',
+    GRAVE_ESC: 'QK_GESC',
 
     // Mouse Keys
     KC_MS_UP: 'KC_MS_U',
@@ -311,22 +248,21 @@ const longFormKeycodes = {
     KC_QUESTION: 'KC_QUES',
 
     // Unicode Support
-    UNICODE_MODE_FORWARD: 'UC_MOD',
-    UNICODE_MODE_REVERSE: 'UC_RMOD',
-    UNICODE_MODE_OSX: 'UC_M_OS',
-    UNICODE_MODE_LNX: 'UC_M_LN',
-    UNICODE_MODE_WIN: 'UC_M_WI',
-    UNICODE_MODE_BSD: 'UC_M_BS',
-    UNICODE_MODE_WINC: 'UC_M_WC'
+    UNICODE_MODE_FORWARD: 'UC_NEXT',
+    UNICODE_MODE_REVERSE: 'UC_PREV',
+    UNICODE_MODE_OSX: 'UC_MAC',
+    UNICODE_MODE_LNX: 'UC_LINX',
+    UNICODE_MODE_WIN: 'UC_WIN',
+    UNICODE_MODE_BSD: 'UC_BSD',
+    UNICODE_MODE_WINC: 'UC_WINC'
 };
 
 
-document.getElementById('submit').addEventListener(
+document.querySelector('#submit').addEventListener(
     "click",
     function() {
 
-        var preElement = document.getElementById('editor');
-        var jsonData = document.getElementById('input').value;
+        var jsonData = document.querySelector('#input').value;
         var base32hex = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 
         // create an object of our JSON data
@@ -923,71 +859,22 @@ document.getElementById('submit').addEventListener(
         /**********************************************
         ** Output the resultant text to the textarea **
         **********************************************/
-        window.output = function(OutputFile) {
-            preElement.innerHTML = "";
-            switch ( OutputFile ) {
-                case "rules.mk":
-                case "keymap.c":
-                    switch ( OutputFile ) {
-                        case "rules.mk":
-                            var PrismText = rulesOutput;
-                            preElement.setAttribute('class', "language-makefile");
-                            break;
-                        case "keymap.c":
-                            var PrismText = keymapOutput;
-                            preElement.setAttribute('class', "language-clike");
-                            break;
-                    }
-                    PrismText.forEach(
-                        function(line) {
-                            var insLine = document.createElement('code');
-                            insLine.innerHTML = line +"\n";
-                            preElement.appendChild( insLine );
-                        }
-                    );
-                    var lastLine = document.createElement('code');
-                    lastLine.innerHTML = "\n";
-                    preElement.appendChild( lastLine );
-                    // Rerun Prism syntax highlighting on the element
-                    Prism.highlightElement(preElement);
-                    document.getElementById("editor").scrollTo(0,0);
-                    selectElementText(document.getElementById("editor"));
-                    break;
-                case "info.json":
-                    var n = 0; // Track which line of text is about to be output
-                    //JSON.stringify(infoJSON, null, " ".repeat(4) )
-                    //JSON.stringify(infoJSON, null, "    ").forEach(
-                    preElement.setAttribute('class', "language-json");
-                    preElement.innerHTML = JSON.stringify(infoJSON, null, " ".repeat(4) )
-                        // Polish the output of layouts tree
-                        .replace(/\n {20,}/g, " ")
-                        .replace(/\n {16,}\}/g, " }")
-                        .replace(/\{ "label"/g, "{\"label\"")
-                        .replace(/([0-9\.]+) \}/g, "$1}")
-                        // Polish the output of matrix_pins tree
-                        .replace(/\n {12}"([BCDEF][0-7])"/g, " \"$1\"")
-                        .replace(/"\n +\]/g, "\" ]")
-                        .replace(/\[ /g, "[")
-                        .replace(/ \]/g, "]")
-                    ;
-                    /*infojsonOutput.forEach(
-                        function(line) {
-                            if ( typeof line == "string" ) {
-                                n++; // Line number
-                                var insLine = document.createElement('code');
-                                preElement.appendChild( insLine );
-                            }
-                        }
-                    );*/
-                    Prism.highlightElement(preElement);
-                    document.getElementById("editor").scrollTo(0,0);
-                    selectElementText(document.getElementById("editor"));
-                    break;
-            }
-        };
+        document.querySelector('#output-rules').textContent = rulesOutput;
+        document.querySelector('#output-keymap').textContent = keymapOutput.join('\n');
 
-        output("info.json");
-        highlightTab("info");
+        document.querySelector('#output-info').textContent = JSON.stringify(infoJSON, null, " ".repeat(4) )
+            // Polish the output of layouts tree
+            .replace(/\n {20,}/g, " ")
+            .replace(/\n {16,}\}/g, " }")
+            .replace(/\{ "label"/g, "{\"label\"")
+            .replace(/([0-9\.]+) \}/g, "$1}")
+            // Polish the output of matrix_pins tree
+            .replace(/\n {12}"([BCDEF][0-7])"/g, " \"$1\"")
+            .replace(/"\n +\]/g, "\" ]")
+            .replace(/\[ /g, "[")
+            .replace(/ \]/g, "]");
 
+        hljs.highlightAll();
+        document.querySelector('#output-card').classList.remove('d-none');
     }
 );

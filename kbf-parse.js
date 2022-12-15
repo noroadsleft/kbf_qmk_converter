@@ -324,8 +324,8 @@ function parseRGBlight(o) {
     led_count: o.settings.rgbNum,
     hue_steps: 8,
     saturation_steps: 8,
-    brightness_step: 8,
-    max_brightness: '255',
+    brightness_steps: 8,
+    max_brightness: 255,
     sleep: true,
     animations: {
       all: true

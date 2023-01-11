@@ -1,6 +1,19 @@
 <script setup>
+import { ref } from 'vue'
+
+import { kbfInfoJson, kbfKeymapC } from '@/kbf-parse'
+
 import InputCard from '@/components/InputCard.vue'
 import OutputCard from '@/components/OutputCard.vue'
+
+const info = ref(null)
+const keymap = ref(null)
+const rules = ref('# This file intentionally left blank\n')
+
+function parseKbf(o) {
+  info.value = kbfInfoJson(o.keyboard)
+  keymap.value = kbfKeymapC(o.keyboard)
+}
 </script>
 
 <template>
@@ -11,8 +24,8 @@ import OutputCard from '@/components/OutputCard.vue'
     </div>
   </div>
   <div class="container mt-3">
-    <InputCard />
-    <OutputCard />
+    <InputCard @loaded-kbf="parseKbf" />
+    <OutputCard v-if="info != null" :info="info" :keymap="keymap" :rules="rules" />
     <footer class="text-muted mb-5">
       <hr />
       <p>

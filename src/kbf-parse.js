@@ -642,3 +642,5 @@ ${layers.join(',\n')}
 };
 `
 }
+
+export { kbfInfoJson, kbfKeymapC }

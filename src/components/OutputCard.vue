@@ -1,4 +1,19 @@
-<script setup></script>
+<script setup>
+defineProps({
+  info: {
+    type: Object,
+    required: true
+  },
+  keymap: {
+    type: String,
+    required: true
+  },
+  rules: {
+    type: String,
+    required: true
+  }
+})
+</script>
 
 <template>
   <div class="card">

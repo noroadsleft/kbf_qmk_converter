@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from 'vue'
 
+import JSZip from 'jszip'
+import { saveAs } from 'file-saver'
+
 import CodeView from '@/components/CodeView.vue'
 
 const props = defineProps({
@@ -39,11 +42,27 @@ const prettyInfo = computed(() => {
 
   return ''
 })
+
+function downloadZip() {
+  const zip = new JSZip()
+
+  zip.file('info.json', prettyInfo.value)
+  zip.file('rules.mk', props.rules)
+  zip.folder('keymaps').folder('default').file('keymap.c', props.keymap)
+
+  zip
+    .generateAsync({
+      type: 'blob'
+    })
+    .then((content) => {
+      saveAs(content, 'keyboard.zip')
+    })
+}
 </script>
 
 <template>
   <div class="card">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between">
       <ul class="nav nav-tabs card-header-tabs">
         <li class="nav-item">
           <button
@@ -79,6 +98,7 @@ const prettyInfo = computed(() => {
           </button>
         </li>
       </ul>
+      <button class="btn btn-sm btn-outline-success" @click="downloadZip">Download ZIP</button>
     </div>
     <div class="card-body">
       <div class="tab-content">

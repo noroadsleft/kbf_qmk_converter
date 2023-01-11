@@ -1,5 +1,9 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+import CodeView from '@/components/CodeView.vue'
+
+const props = defineProps({
   info: {
     type: Object,
     required: true
@@ -12,6 +16,28 @@ defineProps({
     type: String,
     required: true
   }
+})
+
+const prettyInfo = computed(() => {
+  if (props.info) {
+    return (
+      JSON.stringify(props.info, null, '    ')
+        // Place layout keys on a single line
+        .replace(/\n {20,}/g, ' ')
+        .replace(/\n {16,}\}/g, ' }')
+        // Remove spacing
+        .replace(/\{ "label"/g, '{"label"')
+        .replace(/([0-9.]+) \}/g, '$1}')
+        // Place matrix pin arrays on a single line
+        .replace(/\n {12}"([BCDEF][0-7])"/g, ' "$1"')
+        .replace(/"\n +\]/g, '" ]')
+        // Remove spacing
+        .replace(/\[ /g, '[')
+        .replace(/ \]/g, ']') + '\n'
+    )
+  }
+
+  return ''
 })
 </script>
 
@@ -56,9 +82,15 @@ defineProps({
     </div>
     <div class="card-body">
       <div class="tab-content">
-        <div id="tab-pane-info" class="tab-pane fade show active"></div>
-        <div id="tab-pane-keymap" class="tab-pane fade"></div>
-        <div id="tab-pane-rules" class="tab-pane fade"></div>
+        <div id="tab-pane-info" class="tab-pane fade show active">
+          <CodeView language="json" :code="prettyInfo" />
+        </div>
+        <div id="tab-pane-keymap" class="tab-pane fade">
+          <CodeView language="cpp" :code="keymap" />
+        </div>
+        <div id="tab-pane-rules" class="tab-pane fade">
+          <CodeView language="makefile" :code="rules" />
+        </div>
       </div>
     </div>
   </div>

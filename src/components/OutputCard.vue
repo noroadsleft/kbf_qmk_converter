@@ -61,9 +61,9 @@ function downloadZip() {
 </script>
 
 <template>
-  <div class="card">
-    <div class="card-header d-flex justify-content-between">
-      <ul class="nav nav-tabs card-header-tabs">
+  <div>
+    <div>
+      <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
           <button
             id="tab-info"
@@ -97,20 +97,20 @@ function downloadZip() {
             rules.mk
           </button>
         </li>
+        <li class="nav-item ms-auto">
+          <button class="btn btn-sm btn-outline-success" @click="downloadZip">Download ZIP</button>
+        </li>
       </ul>
-      <button class="btn btn-sm btn-outline-success" @click="downloadZip">Download ZIP</button>
     </div>
-    <div class="card-body">
-      <div class="tab-content">
-        <div id="tab-pane-info" class="tab-pane fade show active">
-          <CodeView language="json" :code="prettyInfo" />
-        </div>
-        <div id="tab-pane-keymap" class="tab-pane fade">
-          <CodeView language="cpp" :code="keymap" />
-        </div>
-        <div id="tab-pane-rules" class="tab-pane fade">
-          <CodeView language="makefile" :code="rules" />
-        </div>
+    <div class="tab-content">
+      <div id="tab-pane-info" class="tab-pane fade show active">
+        <CodeView language="json" :code="prettyInfo" />
+      </div>
+      <div id="tab-pane-keymap" class="tab-pane fade">
+        <CodeView language="cpp" :code="keymap" />
+      </div>
+      <div id="tab-pane-rules" class="tab-pane fade">
+        <CodeView language="makefile" :code="rules" />
       </div>
     </div>
   </div>

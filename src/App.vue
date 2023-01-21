@@ -17,11 +17,9 @@ function parseKbf(o) {
 </script>
 
 <template>
-  <div class="bg-light p-4 mb-4 border-bottom">
-    <div class="container">
-      <h2>KBFirmware JSON to QMK Parser</h2>
-      <h5 class="text-muted fw-light">Convert KBFirmware-format JSON files to usable QMK data</h5>
-    </div>
+  <div class="container pt-4">
+    <h2>KBFirmware JSON to QMK Parser</h2>
+    <h5 class="text-muted fw-light">Convert KBFirmware-format JSON files to usable QMK data</h5>
   </div>
   <div class="container mt-3">
     <InputCard @loaded-kbf="parseKbf" />

@@ -47,20 +47,18 @@ const prettyInfo = computed(() => {
   return ''
 })
 
-function downloadZip() {
+async function downloadZip() {
   const zip = new JSZip()
 
   zip.file('info.json', prettyInfo.value)
   zip.file('rules.mk', props.rules)
   zip.folder('keymaps').folder('default').file('keymap.c', props.keymap)
 
-  zip
-    .generateAsync({
-      type: 'blob'
-    })
-    .then((content) => {
-      saveAs(content, `${props.zipFilename}.zip`)
-    })
+  const content = await zip.generateAsync({
+    type: 'blob'
+  })
+
+  saveAs(content, `${props.zipFilename}.zip`)
 }
 </script>
 

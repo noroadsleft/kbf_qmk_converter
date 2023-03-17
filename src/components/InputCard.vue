@@ -17,7 +17,7 @@ function readFile(e) {
       }
 
       if (json) {
-        emit('loadedKbf', json)
+        emit('loadedKbf', f.name, json)
       }
     }
     r.readAsText(f)

@@ -487,7 +487,7 @@ function parseModTapShortcut(key) {
 }
 
 function parseModifiedKey(key, depth = 0) {
-  if (depth <= 5 || (key.fields.length > 0 && 'id' in key.fields[0])) {
+  if (depth <= 5 && key.fields.length > 0 && 'id' in key.fields[0]) {
     return key.id.replace(/\(\)/, `(${parseModifiedKey(key.fields[0], depth + 1)})`)
   }
 

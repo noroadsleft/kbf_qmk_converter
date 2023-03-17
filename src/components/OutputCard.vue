@@ -7,6 +7,10 @@ import { saveAs } from 'file-saver'
 import CodeView from '@/components/CodeView.vue'
 
 const props = defineProps({
+  zipFilename: {
+    type: String,
+    required: true
+  },
   info: {
     type: Object,
     required: true
@@ -55,7 +59,7 @@ function downloadZip() {
       type: 'blob'
     })
     .then((content) => {
-      saveAs(content, 'keyboard.zip')
+      saveAs(content, `${props.zipFilename}.zip`)
     })
 }
 </script>

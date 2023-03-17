@@ -1,81 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/gif" href="./kbfqmk.gif">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/styles/stackoverflow-light.min.css">
-
-  <title>KBFirmware JSON to QMK Parser</title>
-</head>
-<body>
-  <div class="bg-light p-4 mb-4 border-bottom">
-    <div class="container">
-      <h2>KBFirmware JSON to QMK Parser</h2>
-      <h5 class="text-muted fw-light">Convert KBFirmware-format JSON files to usable QMK data</h5>
-    </div>
-  </div>
-  <div class="container mt-3">
-    <div id="status" class="alert alert-success d-none">
-      Copied the contents of <strong id="copied-filename">filename</strong> to the clipboard.
-    </div>
-    <div class="card mb-3">
-      <div class="card-body">
-        <label for="file-import" class="form-label">Select a KBFirmware-formatted JSON file.</label>
-        <input class="form-control" type="file" id="file-import" accesskey="u" accept="application/json">
-        <div class="form-text">
-          Supports JSON exports from kbfirmware.com, qmkeyboard.cn, and mtkeyboard.vip.<br>
-          Have a problem or request? Please <a href="https://github.com/noroadsleft/kbf_qmk_converter/issues/new" target="_blank">file an issue on GitHub</a>.
-        </div>
-
-        <textarea id="input" class="d-none" rows="20" cols="80" spellcheck="false" readonly></textarea>
-        <button id="submit" type="submit" class="d-none">Parse JSON input</button>
-      </div>
-    </div>
-    <div id="output-card" class="card d-none">
-      <div class="card-header">
-        <ul class="nav nav-tabs card-header-tabs">
-          <li class="nav-item">
-            <button class="nav-link active" id="tab-info" type="button" data-bs-toggle="tab" data-bs-target="#tab-pane-info">info.json</button>
-          </li>
-          <li class="nav-item">
-            <button class="nav-link" id="tab-rules" type="button" data-bs-toggle="tab" data-bs-target="#tab-pane-rules">rules.mk</button>
-          </li>
-          <li class="nav-item">
-            <button class="nav-link" id="tab-keymap" type="button" data-bs-toggle="tab" data-bs-target="#tab-pane-keymap">keymap.c</button>
-          </li>
-        </ul>
-      </div>
-      <div class="card-body">
-        <div class="position-relative">
-          <button class="btn btn-outline-primary position-absolute end-0 top-0 me-3 mt-3" type="submit" id="copy">Copy</button>
-          <div class="tab-content">
-            <div class="tab-pane fade show active" id="tab-pane-info">
-              <pre class="mb-0"><code id="output-info" class="language-json border rounded"></code></pre>
-            </div>
-            <div class="tab-pane fade" id="tab-pane-rules">
-              <pre class="mb-0"><code id="output-rules" class="language-makefile border rounded" style="min-height: 70px;"></code></pre>
-            </div>
-            <div class="tab-pane fade" id="tab-pane-keymap">
-              <pre class="mb-0"><code id="output-keymap" class="language-c border rounded"></code></pre>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <footer class="text-muted mb-5">
-      <hr>
-      <p><small>Authored by <a href="https://github.com/noroadsleft" target="_blank">@noroadsleft</a></small></p>
-    </footer>
-  </div>
-
-  <script src="readSingleFile.js"></script>
-  <script src="./showOutput3.js"></script>
-  <script src="./kbf-parse.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.6.0/build/highlight.min.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KBFirmware JSON to QMK Parser</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

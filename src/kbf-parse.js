@@ -14,8 +14,10 @@ const longFormKeycodes = {
   KC_CLCK: 'KC_CAPS',
   KC_PSCREEN: 'KC_PSCR',
   KC_SCROLLLOCK: 'KC_SCRL',
+  KC_SLCK: 'KC_SCRL',
   KC_PGDOWN: 'KC_PGDN',
   KC_NUMLOCK: 'KC_NUM',
+  KC_NLCK: 'KC_NUM',
   KC_NONUS_BSLASH: 'KC_NUBS',
   KC_LOCKING_CAPS: 'KC_LCAP',
   KC_LOCKING_NUM: 'KC_LNUM',
@@ -100,6 +102,7 @@ const longFormKeycodes = {
   RESET: 'QK_BOOT',
   EEPROM_RESET: 'EE_CLR',
   EEP_RST: 'EE_CLR',
+  DEBUG: 'DB_TOGG',
 
   // Audio
   CLICKY_TOGGLE: 'CK_TOGG',
@@ -148,6 +151,10 @@ const longFormKeycodes = {
   // Grave Escape
   GRAVE_ESC: 'QK_GESC',
   KC_GESC: 'QK_GESC',
+
+  // International
+  KC_HENK: 'KC_INT4',
+  KC_MHEN: 'KC_INT5',
 
   // Mouse Keys
   KC_MS_UP: 'KC_MS_U',

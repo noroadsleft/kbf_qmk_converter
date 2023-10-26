@@ -327,7 +327,6 @@ function parseBacklight(o) {
 
 function parseRGBlight(o) {
   return {
-    pin: o.pins.rgb,
     led_count: o.settings.rgbNum,
     hue_steps: 8,
     saturation_steps: 8,
@@ -337,6 +336,12 @@ function parseRGBlight(o) {
     animations: {
       all: true
     }
+  }
+}
+
+function parseWS2812(o) {
+  return {
+    pin: o.pins.rgb
   }
 }
 
@@ -413,6 +418,7 @@ function kbfInfoJson(o) {
 
   if (o.pins.rgb) {
     infoJson.rgblight = parseRGBlight(o)
+    infoJson.ws2812 = parseWS2812(o)
   }
 
   if (o.pins.caps || o.pins.num || o.pins.scroll) {

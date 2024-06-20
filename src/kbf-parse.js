@@ -391,8 +391,8 @@ function parseLayout(o) {
   })
 }
 
-function kbfInfoJson(o) {
-  let infoJson = {
+function kbfKeyboardJson(o) {
+  let keyboardJson = {
     keyboard_name: o.settings.name,
     manufacturer: '',
     url: '',
@@ -413,27 +413,27 @@ function kbfInfoJson(o) {
   }
 
   if (o.pins.led) {
-    infoJson.backlight = parseBacklight(o)
+    keyboardJson.backlight = parseBacklight(o)
   }
 
   if (o.pins.rgb) {
-    infoJson.rgblight = parseRGBlight(o)
-    infoJson.ws2812 = parseWS2812(o)
+    keyboardJson.rgblight = parseRGBlight(o)
+    keyboardJson.ws2812 = parseWS2812(o)
   }
 
   if (o.pins.caps || o.pins.num || o.pins.scroll) {
-    infoJson.indicators = parseIndicators(o)
+    keyboardJson.indicators = parseIndicators(o)
   }
 
-  infoJson.layouts = {
+  keyboardJson.layouts = {
     LAYOUT: {
       layout: parseLayout(o)
     }
   }
 
-  infoJson.meta = 'https://noroadsleft.github.io/kbf_qmk_converter/'
+  keyboardJson.meta = 'https://noroadsleft.github.io/kbf_qmk_converter/'
 
-  return infoJson
+  return keyboardJson
 }
 
 function parseSimpleLayerKey(key) {
@@ -656,4 +656,4 @@ ${layers.join(',\n')}
 `
 }
 
-export { kbfInfoJson, kbfKeymapC }
+export { kbfKeyboardJson, kbfKeymapC }

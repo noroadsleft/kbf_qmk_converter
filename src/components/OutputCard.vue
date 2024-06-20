@@ -11,24 +11,20 @@ const props = defineProps({
     type: String,
     required: true
   },
-  info: {
+  keyboard: {
     type: Object,
     required: true
   },
   keymap: {
     type: String,
     required: true
-  },
-  rules: {
-    type: String,
-    required: true
   }
 })
 
-const prettyInfo = computed(() => {
-  if (props.info) {
+const prettyKeyboard = computed(() => {
+  if (props.keyboard) {
     return (
-      JSON.stringify(props.info, null, '    ')
+      JSON.stringify(props.keyboard, null, '    ')
         // Place layout keys on a single line
         .replace(/\n {20,}/g, ' ')
         .replace(/\n {16,}\}/g, ' }')
@@ -50,8 +46,7 @@ const prettyInfo = computed(() => {
 async function downloadZip() {
   const zip = new JSZip()
 
-  zip.file('info.json', prettyInfo.value)
-  zip.file('rules.mk', props.rules)
+  zip.file('keyboard.json', prettyKeyboard.value)
   zip.folder('keymaps').folder('default').file('keymap.c', props.keymap)
 
   const content = await zip.generateAsync({
@@ -68,18 +63,18 @@ async function downloadZip() {
       <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
           <button
-            id="tab-info"
+            id="tab-keyboard"
             class="nav-link text-end active"
             type="button"
             data-bs-toggle="tab"
-            data-bs-target="#tab-pane-info"
+            data-bs-target="#tab-pane-keyboard"
           >
-            info.json
+            keyboard.json
           </button>
         </li>
         <li class="nav-item">
           <button
-            id="tab-info"
+            id="tab-keymap"
             class="nav-link text-end"
             type="button"
             data-bs-toggle="tab"
@@ -88,31 +83,17 @@ async function downloadZip() {
             keymap.c
           </button>
         </li>
-        <li class="nav-item">
-          <button
-            id="tab-info"
-            class="nav-link text-end"
-            type="button"
-            data-bs-toggle="tab"
-            data-bs-target="#tab-pane-rules"
-          >
-            rules.mk
-          </button>
-        </li>
         <li class="nav-item ms-auto">
           <button class="btn btn-sm btn-outline-success" @click="downloadZip">Download ZIP</button>
         </li>
       </ul>
     </div>
     <div class="tab-content">
-      <div id="tab-pane-info" class="tab-pane fade show active">
-        <CodeView language="json" :code="prettyInfo" />
+      <div id="tab-pane-keyboard" class="tab-pane fade show active">
+        <CodeView language="json" :code="prettyKeyboard" />
       </div>
       <div id="tab-pane-keymap" class="tab-pane fade">
         <CodeView language="cpp" :code="keymap" />
-      </div>
-      <div id="tab-pane-rules" class="tab-pane fade">
-        <CodeView language="makefile" :code="rules" />
       </div>
     </div>
   </div>

@@ -1,19 +1,18 @@
 <script setup>
 import { ref } from 'vue'
 
-import { kbfInfoJson, kbfKeymapC } from '@/kbf-parse'
+import { kbfKeyboardJson, kbfKeymapC } from '@/kbf-parse'
 
 import InputCard from '@/components/InputCard.vue'
 import OutputCard from '@/components/OutputCard.vue'
 
 const zipFilename = ref('keyboard')
-const info = ref(null)
+const keyboard = ref(null)
 const keymap = ref(null)
-const rules = ref('# This file intentionally left blank\n')
 
 function parseKbf(filename, o) {
   zipFilename.value = filename.substring(0, filename.lastIndexOf('.'))
-  info.value = kbfInfoJson(o.keyboard)
+  keyboard.value = kbfKeyboardJson(o.keyboard)
   keymap.value = kbfKeymapC(o.keyboard)
 }
 </script>
@@ -26,11 +25,10 @@ function parseKbf(filename, o) {
   <div class="container mt-3">
     <InputCard @loaded-kbf="parseKbf" />
     <OutputCard
-      v-if="info != null"
+      v-if="keyboard != null"
       :zip-filename="zipFilename"
-      :info="info"
+      :keyboard="keyboard"
       :keymap="keymap"
-      :rules="rules"
     />
     <footer class="text-muted mb-5">
       <hr />
